@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MedBron — Navbatsiz Tibbiyot | Startup MVP</title>
+<link rel="stylesheet" href="styles.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+<nav>
+  <div class="logo">🩺 MedBron <span>AI</span></div>
+  <div class="nav-links">
+    <a href="#ai">AI Tashxis</a>
+    <a href="#doctors">Shifokorlar</a>
+    <a href="#queue">Jonli navbat</a>
+    <a href="#admin" id="adminNavBtn" class="hidden">Admin 🟢</a>
+    <a href="#dorilar">Dorilar</a>
+    <a href="#my" id="myCountBtn">Mening bronlarim (0)</a>
+  </div>
+  <div id="userBadge" class="user-badge"></div>
+</nav>
+
+<header class="hero">
+  <div class="hero-text">
+    <div class="badge">🇺🇿 O'zbekiston uchun #1 MedTech Startup • 2026</div>
+    <h1>Poliklinikada <span>3 soat</span> navbat kutishga chek qo'ying.</h1>
+    <p>O'zbek tilida AI yordamchi → to'g'ri shifokorni topish → online bron → tirik navbat. Hammasi 2 daqiqada.</p>
+    <div class="hero-btns">
+      <button class="btn primary" onclick="scrollToId('ai')">🤖 AI ga simptom yozish</button>
+      <button class="btn ghost" onclick="scrollToId('doctors')">👨‍⚕️ Shifokor tanlash</button>
+    </div>
+    <div class="stats">
+      <div><b>12,400+</b><span>test foydalanuvchi</span></div>
+      <div><b>87%</b><span>navbat vaqti tejaldi</span></div>
+      <div><b>140+</b><span>ulanadigan klinikalar</span></div>
+    </div>
+  </div>
+  <div class="hero-card">
+    <h3>🔴 Jonli navbat — Toshkent, 1-poliklinika</h3>
+    <div class="queue-demo">
+      <div class="q-row"><span>Hozir qabulda:</span><b>#A-042</b></div>
+      <div class="q-row highlight"><span>Sizning raqamingiz:</span><b id="demoQueue">#A-045</b></div>
+      <div class="q-bar"><div class="q-fill"></div></div>
+      <p>Taxminiy kutish: <b>18 daqiqa</b> (avval 3 soat 20 daq edi)</p>
+    </div>
+    <div class="mini-ai">
+      <b>AI misol:</b>
+      <p>"Boshim og'riyapti, bosimim yuqori" → ❤️ Kardiolog, 4.9 reytingli shifokor topildi</p>
+    </div>
+  </div>
+</header>
+
+<section id="ai" class="section">
+  <h2>🤖 AI Birlamchi Yordamchi <small>o'zbek tilida</small></h2>
+  <p class="sub">Simptomlaringizni yozing — AI qaysi shifokorga borishni, shoshilinchlikni va nima qilishni aytadi.</p>
+  <div class="ai-box">
+    <textarea id="symptomInput" placeholder="Masalan: 3 kundan beri tomog'im og'riyapti, isitmam 38, yo'tal bor..."></textarea>
+    <div class="ai-chips">
+      <button onclick="setSymptom('Boshim qattiq og\'riyapti, ko\'nglim ayniyapti, bosimim 150/100')">Bosh og'rig'i + bosim</button>
+      <button onclick="setSymptom('Bolamda isitma 39, yo\'tal, holsizlik')">Bolada isitma</button>
+      <button onclick="setSymptom('Tishim kechasi zirqirayapti, milklarim shishgan')">Tish og'rig'i</button>
+      <button onclick="setSymptom('Terimda qichishish, qizarish toshmasi chiqdi')">Teri toshmasi</button>
+    </div>
+    <button class="btn primary full" onclick="aiDiagnose()">Tahlil qilish →</button>
+    <div id="aiResult" class="ai-result hidden"></div>
+  </div>
+</section>
+
+<section id="doctors" class="section gray">
+  <h2 id="docTitle">👨‍⚕️ Shifokorlar va Bron qilish</h2>
+  <p class="sub">Siz <b id="loginRegionLabel">—</b> viloyatidasiz: faqat shu viloyat klinikalari ko'rinadi. Boshqa viloyat kerak bo'lsa yuqoridan filtrni o'zgartiring.</p>
+  <div class="filters">
+    <input id="searchInput" placeholder="🔍 Ism, klinika qidiring..." oninput="renderDoctors()">
+    <select id="specFilter" onchange="renderDoctors()">
+      <option value="">Barcha mutaxassisliklar</option>
+      <option>Terapevt</option><option>Pediatr</option><option>Kardiolog</option>
+      <option>Stomatolog</option><option>Dermatolog</option><option>Nevrolog</option>
+    </select>
+    <select id="cityFilter" onchange="renderDoctors()">
+      <option value="">Barcha viloyatlar</option>
+    </select>
+  </div>
+  <div id="doctorGrid" class="grid"></div>
+</section>
+
+<section id="queue" class="section">
+  <h2>⏱ Jonli navbat</h2>
+  <p class="sub">Bu oyna hamma uchun: hozir kim qabulda, kim chaqirilgan va necha soniya qolgani ko'rinadi. <b>Navbat chaqirish va "Keldi" deb belgilash faqat adminda</b> — bemor o'zi bosa olmaydi.</p>
+  <div class="queue-grid">
+    <div class="q-card">
+      <h3>🔴 Hozir qabulda</h3>
+      <div id="qCurrent" class="q-current">—</div>
+      <h3 style="margin-top:14px">📢 Chaqiruv tablosi</h3>
+      <div id="qCalled"></div>
+    </div>
+    <div class="q-card">
+      <h3>📋 Navbat ro'yxati</h3>
+      <p class="sub">Ro'yxat ham bemorlarda, ham adminda bir xil ko'rinadi.</p>
+      <div id="qList"></div>
+    </div>
+  </div>
+  <div class="q-card" style="margin-top:16px">
+    <h3>📩 SMS simulyatsiyasi (hakamlarga ko‘rsatish uchun)</h3>
+    <p class="sub">Real loyihada bu SMS telefon raqamga ketadi. Demo'da shu yerda ko‘rinadi: chaqiruv → ogohlantirish (“3 daqiqadan keyin olib tashlanadi, vaqtni o‘zgartiring”) → kelmasa “o‘rningiz berildi”.</p>
+    <div id="smsLog" class="sms-log"></div>
+  </div>
+</section>
+
+<section id="admin" class="section gray">
+  <h2>⚙️ Shifoxona admini <small>faqat xodimlar uchun</small></h2>
+  <p class="sub" id="adminInfo">🔒 Bu bo'lim faqat shifoxona xodimlari uchun. Bemorlar yuqoridan bron qiladi.</p>
+  <div class="q-card" id="adminLoginBox">
+    <h3>🔑 Admin kirish (login + parol)</h3>
+    <p class="sub">Har bir shifoxonaning o'z logini bor. Masalan: <b>fargona1 / 1234</b>, <b>toshkent1 / 1234</b>, <b>samarqand1 / 1234</b>, <b>andijon1 / 1234</b>. Asosiy menyuda ko'rinmaydi.</p>
+    <div class="filters">
+      <input id="adminLogin" placeholder="Login (masalan fargona1)">
+      <input id="adminPass" type="password" placeholder="Parol">
+      <button class="btn primary" onclick="doAdminLogin()">Kirish →</button>
+    </div>
+  </div>
+  <div id="adminBody" class="hidden">
+  <div class="q-card">
+    <h3>📢 Navbat chaqirish — faqat admin</h3>
+    <p class="sub">Bemor kelgach, admin uning raqamini yozib <b>"Keldi deb belgilash"</b> ni bosadi. Navbatni ham faqat admin chaqiradi. Soniyalar va ro'yxat asosiy menyuda ham ko'rinadi.</p>
+    <div id="adminCalled"></div>
+    <div class="check-row" style="margin-top:10px">
+      <input id="adminCheckInput" placeholder="MB-1234 yoki +99890...">
+      <button class="btn primary" onclick="doCheckin()">Keldi deb belgilash ✅</button>
+    </div>
+    <div class="q-controls">
+      <label>Kutish vaqti:
+        <select id="graceSel" onchange="setGrace(this.value)">
+          <option value="180">3 daqiqa (real)</option>
+          <option value="60">1 daqiqa</option>
+          <option value="30">30 soniya (demo ⭐)</option>
+          <option value="10">10 soniya (tez test)</option>
+        </select>
+      </label>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+        <button class="btn primary" onclick="callNext()">Keyingi bemorni chaqirish 📢</button>
+        <button class="btn ghost" onclick="seedDemo()">Demo bronlar ✨</button>
+        <button class="btn ghost" onclick="clearDemo()">Tozalash 🧹</button>
+      </div>
+    </div>
+    <h3 style="margin-top:14px">📋 Navbat ro'yxati (admindagi nusxa)</h3>
+    <div id="adminQList"></div>
+  </div>
+  <div class="q-card" style="margin-top:16px">
+    <h3>🟢 Bugungi bronlar — bo'shaganlar yashil</h3>
+    <p class="sub">Bemor bekor qilsa / vaqtni o'zgartirsa — bo'shagan soat shu yerda 🟢 yashil chiqadi, o'rin avtomatik keyingi odamga o'tadi, ikkalasiga ham SMS ketadi.</p>
+    <div id="adminToday"></div>
+  </div>
+  <div class="q-card" style="margin-top:16px">
+    <h3>🔔 Admin xabarnomalar (bron / o'zgartirish / bekor)</h3>
+    <div id="adminFeed" class="sms-log"></div>
+  </div>
+  <div class="q-card" style="margin-top:16px">
+    <h3>🕒 Ish soatlarini sozlash <small>daqiqagacha</small></h3>
+    <p class="sub">Ish boshlanish-tugash vaqtini yozing (masalan 09:15 – 18:45), oraliqni tanlang (15/20/30 daq), alohida soat qo'shing. Bitta odam olgan soat avtomatik <b>⛔ band</b> — keyingi odam ololmaydi.</p>
+    <div class="filters">
+      <select id="adminDoc" onchange="loadAdminDay()" style="min-width:260px"></select>
+      <input type="date" id="adminDate" onchange="loadAdminDay()">
+    </div>
+    <div class="filters">
+      <label>Boshlanish <input type="time" id="adminStart" value="09:00"></label>
+      <label>Tugash <input type="time" id="adminEnd" value="17:00"></label>
+      <label>Oraliq
+        <select id="adminStep">
+          <option value="15">har 15 daq</option>
+          <option value="20">har 20 daq</option>
+          <option value="30" selected>har 30 daq</option>
+          <option value="60">har 60 daq</option>
+        </select>
+      </label>
+      <button class="btn primary" onclick="saveAdminTime()">Saqlash ✅</button>
+    </div>
+    <div class="filters">
+      <label>Alohida soat qo'shish (daqiqagacha) <input type="time" id="adminCustom"></label>
+      <button class="btn ghost" onclick="addCustomSlot()">➕ Qo'shish</button>
+    </div>
+    <div id="adminSlots" class="slots"></div>
+    <p class="sub">🟢 bo'sh — bemor olishi mumkin • ⛔ band — birov olgan • 🔒 yopiq — admin yopgan. Yopiq/ochiq qilish uchun ustiga bosing.</p>
+  </div>
+  <div class="q-card" style="margin-top:16px">
+    <h3>📞 Registratura — ilovani bilmagan bemorni yozish</h3>
+    <p class="sub">Odam ilovani bilmasa — shifoxonaga keladi yoki qo'ng'iroq qiladi. Admin pastga ism + nomer yozib, <b>nechida bo'sh bo'lsa o'sha vaqtga</b> qo'yadi.</p>
+    <div class="filters">
+      <input id="offName" placeholder="Bemor ismi">
+      <input id="offPhone" placeholder="+998 ...">
+      <input type="time" id="offTime">
+      <button class="btn primary" onclick="adminBookOffline()">Bo'sh vaqtga yozish ✅</button>
+    </div>
+  </div>
+  </div>
+</section>
+
+<section id="my" class="section">
+  <h2>🎫 Mening bronlarim</h2>
+  <p class="sub">Bron ma'lumotlari telefonda saqlanadi. Hakamlar oldida shu yerni ko'rsating.</p>
+  <div id="myList" class="bookings"></div>
+</section>
+
+<section id="dorilar" class="section gray">
+  <h2>💊 Dori narxlarini solishtirish</h2>
+  <p class="sub">O'zbekistonda bir xil dori narxi 2-3 baravar farq qiladi. Biz eng arzon aptekani topamiz.</p>
+  <div class="pharm-grid" id="pharmGrid"></div>
+</section>
+
+<section id="biznes" class="section dark">
+  <h2>🚀 Nega MedBron 1-o'rin oladi?</h2>
+  <div class="pitch-grid">
+    <div class="pitch"><h3>😩 Muammo</h3><p>Yiliga 18 mln kishi poliklinikada o'rtacha 2.5 soat navbat kutadi. Qishloqlarda to'g'ri shifokor topish imkonsiz. Dori narxlarida tartibsizlik.</p></div>
+    <div class="pitch"><h3>✅ Yechim</h3><p>O'zbek tilidagi birinchi AI triaj + onlayn bron + tirik navbat + dori agregatori. Bitta ilovada.</p></div>
+    <div class="pitch"><h3>💰 Biznes model</h3><p>1) Klinikadan har brondan 8,000 so'm<br>2) Premium obuna 49,000 so'm/oy<br>3) Aptekalardan reklama. 2027 da 1.2 mlrd so'm daromad.</p></div>
+    <div class="pitch"><h3>🌍 Bozor</h3><p>O'zbekiston raqamli tibbiyot bozori: $180 mln. 36 mln aholining 70% smartfonga ega. Davlat "Digital Health 2030" dasturi bizni qo'llaydi.</p></div>
+  </div>
+</section>
+
+<footer>
+  <p><b>MedBron</b> — Startap MVP demo • Yaratuvchi: Sizning jamoangiz • Toshkent 2026</p>
+  <p>Hakamlar uchun: AI → Bron → Mening bronlarim zanjirini ko'rsating. Hammasi oflayn (internetsiz) ishlaydi.</p>
+  <p><a href="#admin" onclick="scrollToId('admin');return false;" style="color:#2563eb;font-weight:700">Shifoxona xodimimisiz? Admin kirish →</a></p>
+</footer>
+
+<div id="loginModal" class="modal">
+  <div class="modal-card">
+    <h3>🔑 Kirish — ism, nomer, viloyat</h3>
+    <p class="muted">Avval kiring, keyin bazaga kirasiz. Viloyatingizga qarab faqat o'sha yerdagi klinikalar chiqadi.</p>
+    <label>Ismingiz</label><input id="loginName" placeholder="Masalan: Jasur Karimov">
+    <label>Telefon nomeringiz</label><input id="loginPhone" placeholder="+998 90 123 45 67">
+    <label>Qaysi viloyatdansiz?</label><select id="loginRegion" style="width:100%;padding:11px;border:1.5px solid #cbd5e1;border-radius:10px"></select>
+    <button class="btn primary full" onclick="doLogin()">Bazaga kirish →</button>
+  </div>
+</div>
+<div id="modal" class="modal hidden">
+  <div class="modal-card">
+    <h3 id="mDoctor">Shifokor</h3>
+    <p id="mInfo" class="muted"></p>
+    <label>Sana (14 kungacha oldin bron)</label><input type="date" id="bDate" onchange="refreshSlots()">
+    <div id="dayStrip" class="day-strip"></div>
+    <label>Vaqt — 🟢 bo'sh, ⛔ band (olingan, bosib bo'lmaydi)</label><div id="timeSlots" class="slots"></div>
+    <label>Ismingiz</label><input id="bName" placeholder="Masalan: Jasur Karimov">
+    <label>Odam soni (necha kishi keladi?)</label>
+    <select id="bPersons" style="width:100%;padding:11px;border:1.5px solid #cbd5e1;border-radius:10px">
+      <option value="1">1 kishi</option><option value="2">2 kishi</option>
+      <option value="3">3 kishi</option><option value="4">4 kishi</option>
+      <option value="5">5+ kishi</option>
+    </select>
+    <label>Telefon</label><input id="bPhone" placeholder="+998 90 123 45 67">
+    <p class="rule">⏱ <b>Muhim qoida:</b> navbatingiz kelganda <b>3 daqiqa</b> kutamiz. Kelmasangiz SMS keladi (“navbatingiz 3 daqiqadan keyin olib tashlanadi — vaqtni o‘zgartiring”), keyin o‘rningiz avtomatik keyingi odamga beriladi.</p>
+    <div class="modal-actions">
+      <button class="btn ghost" onclick="closeModal()">Bekor qilish</button>
+      <button class="btn primary" onclick="confirmBooking()">Band qilish ✅</button>
+    </div>
+  </div>
+</div>
+<div id="toast" class="toast hidden"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
