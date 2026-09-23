@@ -4,12 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MedBron — Navbatsiz Tibbiyot | Startup MVP</title>
+<link rel="icon" type="image/svg+xml" href="logo.svg">
 <link rel="stylesheet" href="styles.css">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
 <nav>
-  <div class="logo">🩺 MedBron <span>AI</span></div>
+  <div class="logo"><img src="logo.svg" alt="MedBron logo" class="logo-img"> MedBron <span>AI</span></div>
   <div class="nav-links">
     <a href="#ai">AI Tashxis</a>
     <a href="#doctors">Shifokorlar</a>
@@ -228,9 +229,10 @@
     <h3>🔑 Kirish — ism, nomer, viloyat</h3>
     <p class="muted">Avval kiring, keyin bazaga kirasiz. Viloyatingizga qarab faqat o'sha yerdagi klinikalar chiqadi.</p>
     <label>Ismingiz</label><input id="loginName" placeholder="Masalan: Jasur Karimov">
-    <label>Telefon nomeringiz</label><input id="loginPhone" placeholder="+998 90 123 45 67">
+    <label>Telefon nomeringiz</label><input id="loginPhone" type="tel" inputmode="tel" placeholder="+998 90 123 45 67">
     <label>Qaysi viloyatdansiz?</label><select id="loginRegion" style="width:100%;padding:11px;border:1.5px solid #cbd5e1;border-radius:10px"></select>
     <button class="btn primary full" onclick="doLogin()">Bazaga kirish →</button>
+    <button class="link-btn" onclick="document.getElementById('loginModal').classList.add('hidden');scrollToId('admin')">🏥 Shifoxona xodimiman — admin kirish</button>
   </div>
 </div>
 <div id="modal" class="modal hidden">
@@ -247,7 +249,7 @@
       <option value="3">3 kishi</option><option value="4">4 kishi</option>
       <option value="5">5+ kishi</option>
     </select>
-    <label>Telefon</label><input id="bPhone" placeholder="+998 90 123 45 67">
+    <label>Telefon</label><input id="bPhone" type="tel" inputmode="tel" placeholder="+998 90 123 45 67">
     <p class="rule">⏱ <b>Muhim qoida:</b> navbatingiz kelganda <b>3 daqiqa</b> kutamiz. Kelmasangiz SMS keladi (“navbatingiz 3 daqiqadan keyin olib tashlanadi — vaqtni o‘zgartiring”), keyin o‘rningiz avtomatik keyingi odamga beriladi.</p>
     <div class="modal-actions">
       <button class="btn ghost" onclick="closeModal()">Bekor qilish</button>
@@ -257,6 +259,21 @@
 </div>
 <div id="toast" class="toast hidden"></div>
 
-<script src="app.js"></script>
+<!-- Telefon uchun pastki menyu (ilovadagidek) -->
+<nav class="bottom-nav" aria-label="Asosiy menyu">
+  <a href="#ai"><span>🤖</span>AI</a>
+  <a href="#doctors"><span>👨‍⚕️</span>Shifokor</a>
+  <a href="#queue"><span>⏱</span>Navbat</a>
+  <a href="#my"><span>🎫<b id="bnCount" class="bn-count hidden">0</b></span>Bronlarim</a>
+  <a href="#dorilar"><span>💊</span>Dorilar</a>
+</nav>
+
+<script src="js/data.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/slots.js"></script>
+<script src="js/ai-doctors.js"></script>
+<script src="js/booking.js"></script>
+<script src="js/queue.js"></script>
+<script src="js/admin.js"></script>
 </body>
 </html>

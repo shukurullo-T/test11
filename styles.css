@@ -1,7 +1,8 @@
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',system-ui,sans-serif}
 body{background:#f8fafc;color:#0f172a}
 nav{position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;align-items:center;padding:14px 28px;background:#fff;border-bottom:1px solid #e2e8f0}
-.logo{font-weight:800;font-size:20px}.logo span{background:#2563eb;color:#fff;padding:2px 8px;border-radius:8px;font-size:14px}
+.logo{font-weight:800;font-size:20px;display:flex;align-items:center;gap:8px}.logo span{background:#2563eb;color:#fff;padding:2px 8px;border-radius:8px;font-size:14px}
+.logo-img{width:34px;height:34px;border-radius:9px}
 .nav-links{display:flex;gap:16px;align-items:center;flex-wrap:wrap}.nav-links a{text-decoration:none;color:#334155;font-weight:600;font-size:14px}
 #myCountBtn{background:#eff6ff;padding:8px 14px;border-radius:20px}
 .hero{display:grid;grid-template-columns:1.2fr .8fr;gap:24px;padding:48px 28px;max-width:1200px;margin:auto}
@@ -16,6 +17,7 @@ nav{position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;
 .hero-card{background:#0f172a;color:#fff;border-radius:20px;padding:22px;height:fit-content}
 .q-row{display:flex;justify-content:space-between;margin:10px 0}.highlight b{color:#4ade80}
 .q-bar{background:#1e293b;height:10px;border-radius:10px;overflow:hidden;margin:12px 0}.q-fill{width:72%;height:100%;background:linear-gradient(90deg,#22c55e,#4ade80)}
+.hero-card p{color:#cbd5e1}.hero-card p b{color:#fff}
 .mini-ai{background:#1e293b;border-radius:12px;padding:12px;margin-top:12px;font-size:14px}
 .section{padding:48px 28px;max-width:1200px;margin:auto}
 .gray{background:#fff;border-top:1px solid #e2e8f0;border-bottom:1px solid #e2e8f0;max-width:100%}
@@ -100,3 +102,97 @@ footer{text-align:center;padding:28px;color:#64748b;font-size:14px}
 .freed-hl{border:2px solid #22c55e!important;background:#f0fdf4!important}
 #adminNavBtn{background:#dcfce7;padding:8px 14px;border-radius:20px}
 a.mini-btn{text-decoration:none;color:inherit;display:inline-block}
+/* AI: ogohlantirish va shoshilinch holat */
+.ai-note{margin-top:12px;font-size:12.5px;color:#64748b;border-top:1px dashed #cbd5e1;padding-top:8px}
+.ai-result.ai-danger{background:#fef2f2;border-color:#fca5a5}.ai-danger h3{color:#b91c1c}
+.danger{background:#dc2626;color:#fff}.danger:hover{background:#b91c1c}
+.link-btn{background:none;border:none;color:#2563eb;font-weight:700;cursor:pointer;font-size:13px;margin-top:12px;text-decoration:underline}
+/* Foydalanuvchi belgisi */
+.ub-name{white-space:nowrap}
+.ub-btn{padding:5px 9px;font-size:12px}
+/* Pastki menyu — faqat telefonda */
+.bottom-nav{display:none}
+section[id]{scroll-margin-top:80px}
+
+/* ============ TELEFON EKRANI ============ */
+@media(max-width:800px){
+  html{-webkit-text-size-adjust:100%}
+  body{padding-bottom:calc(68px + env(safe-area-inset-bottom))}
+  /* tepa: faqat logo + ixcham foydalanuvchi */
+  nav{padding:8px 14px;gap:8px}
+  .logo{font-size:17px}.logo-img{width:28px;height:28px}.logo span{font-size:11px;padding:1px 6px}
+  nav>.nav-links{display:none}
+  .user-badge{background:none;border:none;padding:0;gap:6px;font-size:12.5px}
+  .user-badge .ub-extra{display:none}
+  .user-badge .btn{padding:8px 12px;font-size:13px}
+  section[id]{scroll-margin-top:56px}
+
+  /* pastki menyu */
+  .bottom-nav{display:flex;justify-content:space-around;border-bottom:none;position:fixed;top:auto;left:0;right:0;bottom:0;z-index:40;background:rgba(255,255,255,.97);backdrop-filter:blur(8px);border-top:1px solid #e2e8f0;padding:6px 4px calc(6px + env(safe-area-inset-bottom));box-shadow:0 -4px 16px rgba(15,23,42,.06)}
+  .bottom-nav a{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;text-decoration:none;color:#64748b;font-size:11px;font-weight:700;padding:4px 0;border-radius:10px}
+  .bottom-nav a span{font-size:20px;line-height:1;position:relative}
+  .bottom-nav a.active{color:#2563eb;background:#eff6ff}
+  .bn-count{position:absolute;top:-6px;right:-12px;background:#ef4444;color:#fff;font-size:10px;min-width:17px;height:17px;border-radius:9px;display:flex;align-items:center;justify-content:center;padding:0 4px}
+  .toast{bottom:calc(84px + env(safe-area-inset-bottom));width:calc(100% - 32px);max-width:420px;text-align:center;font-size:14px}
+
+  /* hero */
+  .hero{grid-template-columns:1fr;padding:22px 16px 28px;gap:20px}
+  .badge{font-size:11.5px;padding:6px 11px;margin-bottom:10px}
+  .hero h1{font-size:29px;line-height:1.15}
+  .hero p{font-size:15px;margin:12px 0}
+  .hero-btns{flex-direction:column;gap:8px}
+  .hero-btns .btn{width:100%}
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:18px}
+  .stats>div{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:10px 8px;text-align:center}
+  .stats b{font-size:18px}.stats span{font-size:11px;line-height:1.2;display:block}
+  .hero-card{padding:18px;border-radius:16px}.hero-card h3{font-size:16px}
+
+  /* bo'limlar */
+  .section{padding:28px 16px}
+  h2{font-size:22px;line-height:1.25}
+  h2 small{display:inline-block;margin-top:6px;font-size:11.5px}
+  .sub{font-size:14px;margin:6px 0 16px}
+  .ai-box{padding:14px;border-radius:14px}
+  textarea,input,select{font-size:16px!important} /* iPhone kattalashtirmasin */
+  .ai-chips{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px;margin:10px -14px;padding-left:14px;padding-right:14px;scrollbar-width:none}
+  .ai-chips::-webkit-scrollbar{display:none}
+  .ai-chips button{white-space:nowrap;flex:none}
+  .filters{gap:8px}
+  .filters>*{flex:1 1 100%;width:100%}
+  .filters label{justify-content:space-between}
+  .filters label input,.filters label select{flex:1;max-width:60%}
+  #adminDoc{min-width:0!important}
+  .grid,.pharm-grid,.pitch-grid{grid-template-columns:1fr;gap:12px}
+  .card{padding:16px}
+
+  /* navbat */
+  .queue-grid{grid-template-columns:1fr}
+  .q-card{padding:14px;border-radius:14px}
+  .called-card{flex-direction:column}
+  .count-right{width:100%}
+  .check-row{flex-direction:column}
+  .check-row .btn{width:100%}
+  .q-controls .btn{flex:1 1 100%}
+  .q-item{font-size:13px}
+  .q-item>span:first-child{flex:1;min-width:0}
+  .q-item .st{margin-top:0;flex:none}
+
+  /* bronlar */
+  .ticket{flex-direction:column;align-items:stretch;padding:14px}
+  .ticket-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .ticket-btns>*{width:100%;padding:10px}
+  .ticket-btns>:only-child{grid-column:1/-1}
+
+  /* bron oynasi — pastdan chiqadigan varaq */
+  .modal{align-items:flex-end;padding:0}
+  .modal-card{max-width:100%;border-radius:20px 20px 0 0;max-height:94vh;margin:0;padding:18px 16px calc(16px + env(safe-area-inset-bottom));animation:sheetUp .22s ease-out}
+  .modal-actions{bottom:calc(-16px - env(safe-area-inset-bottom))}
+  #timeSlots{max-height:none}
+  .slots button{flex:1 1 calc(33% - 8px);padding:10px 4px;font-size:13px}
+  .day-strip{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+  .day-strip button{flex:none;min-width:58px}
+  #dayStrip{max-height:none}
+
+  footer{padding:24px 16px;font-size:13px}
+}
+@keyframes sheetUp{from{transform:translateY(40px);opacity:.4}to{transform:none;opacity:1}}
