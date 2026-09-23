@@ -108,8 +108,8 @@ a.mini-btn{text-decoration:none;color:inherit;display:inline-block}
 .danger{background:#dc2626;color:#fff}.danger:hover{background:#b91c1c}
 .link-btn{background:none;border:none;color:#2563eb;font-weight:700;cursor:pointer;font-size:13px;margin-top:12px;text-decoration:underline}
 /* Foydalanuvchi belgisi */
-.ub-name{white-space:nowrap}
-.ub-btn{padding:5px 9px;font-size:12px}
+.ub-name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.ub-btn{padding:5px 9px;font-size:12px;white-space:nowrap;flex:none}
 /* Pastki menyu — faqat telefonda */
 .bottom-nav{display:none}
 section[id]{scroll-margin-top:80px}
@@ -122,7 +122,8 @@ section[id]{scroll-margin-top:80px}
   nav{padding:8px 14px;gap:8px}
   .logo{font-size:17px}.logo-img{width:28px;height:28px}.logo span{font-size:11px;padding:1px 6px}
   nav>.nav-links{display:none}
-  .user-badge{background:none;border:none;padding:0;gap:6px;font-size:12.5px}
+  .user-badge{background:none;border:none;padding:0;gap:6px;font-size:12.5px;flex-wrap:nowrap;min-width:0;flex:1;justify-content:flex-end}
+  nav{flex-wrap:nowrap}.logo{flex:none}
   .user-badge .ub-extra{display:none}
   .user-badge .btn{padding:8px 12px;font-size:13px}
   section[id]{scroll-margin-top:56px}
