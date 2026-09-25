@@ -107,9 +107,9 @@ function toast(t){const e=document.getElementById('toast');if(!e)return;e.textCo
 // init viloyat selectlari
 (function init(){
   const lr=document.getElementById('loginRegion');
-  if(lr)lr.innerHTML='<option value="">— Viloyatni tanlang —</option>'+REGIONS.map(r=>`<option>${r}</option>`).join('');
+  if(lr)lr.innerHTML='<option value="">— Viloyatni tanlang —</option>'+REGIONS.map(r=>`<option value="${esc(r)}">${r}</option>`).join('');
   const cf=document.getElementById('cityFilter');
-  if(cf)cf.innerHTML='<option value="">Barcha viloyatlar</option>'+REGIONS.map(r=>`<option>${r}</option>`).join('');
+  if(cf)cf.innerHTML='<option value="">Barcha viloyatlar</option>'+REGIONS.map(r=>`<option value="${esc(r)}">${r}</option>`).join('');
   const ad=document.getElementById('adminDate');
   if(ad){ad.value=todayStr();ad.min=todayStr();ad.max=addDaysStr(todayStr(),MAX_ADVANCE_DAYS-1);}
 })();

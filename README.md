@@ -12,21 +12,16 @@ python -m http.server 8765
 
 So'ng http://localhost:8765 ni oching.
 
-## Demo loginlar (admin / registratura)
+## Admin loginlar
 
-| Login | Parol | Klinika |
-|---|---|---|
-| `fargona1` | `1234` | Sog'lom Oila (Farg'ona) |
-| `toshkent1` | `1234` | Shifo Nur klinikasi (Toshkent) |
-| `samarqand1` | `1234` | Bola Salomatligi (Samarqand) |
-| `andijon1` | `1234` | Mehrli Ona (Andijon) |
+Har bir klinikaning o'z logini bor. Login va parollar **hakamlarga alohida (qog'ozda) beriladi** — kodda va bu faylda ochiq saqlanmaydi (kodda faqat xeshi turadi).
 
 ## Hakamlar uchun demo ssenariy
 
 1. Ism + telefon + viloyat bilan kiring.
 2. **AI Tashxis** — simptom yozing (masalan "ko'kragim siqilyapti" → 🚨 103 ogohlantirishi).
 3. Shifokorni tanlab bron qiling → **Mening bronlarim**.
-4. Pastdagi "Shifoxona xodimimisiz?" orqali admin bo'lib kiring → **Demo bronlar ✨** → **Keyingi bemorni chaqirish 📢**.
+4. Admin bo'limiga (alohida berilgan login bilan) kiring → **Demo bronlar ✨** → **Keyingi bemorni chaqirish 📢**.
 5. **Jonli navbat** va **SMS simulyatsiyasi** oynalarini kuzating.
 
 ## Fayllar
@@ -44,7 +39,7 @@ So'ng http://localhost:8765 ni oching.
 ## Cheklovlar (MVP)
 
 - Server yo'q: ma'lumotlar faqat shu brauzerda saqlanadi, SMS — simulyatsiya.
-- Admin parollari kod ichida ochiq turibdi — faqat demo uchun. Haqiqiy versiyada backend + xeshlangan parollar kerak.
+- Parollar kodda faqat xesh ko'rinishida, lekin serversiz demo baribir to'liq himoyalanmaydi. Haqiqiy versiyada backend kerak.
 - AI — kalit so'zlarga asoslangan qoidalar, tashxis emas.
 
 ---
@@ -59,7 +54,7 @@ Login (name + phone + region) — On first open, a login modal requires your nam
 AI First-Aid Assistant — You type symptoms in Uzbek (e.g. "headache, high blood pressure"). The built-in rule-based AI suggests the right specialist (Cardiologist, Pediatrician, etc.), an urgency level, home advice, and a matching doctor from your region with a one-click "Book this doctor" button.
 Doctors & Booking (up to 14 days ahead) — Doctor cards show specialty, clinic, address, rating, price, plus live availability: how many free slots today and the nearest free day. In the booking modal you pick a date (a 14-day strip shows 🟢 free / 🔴 full per day), then a time slot. A slot taken by someone else becomes ⛔ taken and can't be clicked. Booking requires name + phone + number of people.
 Smart live queue (no-show handling) — When a patient's turn comes, the admin calls them. The public screen shows only a countdown timer (default 3 minutes, 30-sec demo mode). If the patient doesn't confirm in time: warning SMS → then the slot is automatically freed and passed to the next patient, and both sides get SMS notifications. If someone cancels or reschedules, their freed slot is highlighted 🟢 green in the admin panel and auto-offered to the next waiting patient.
-Admin panel (hidden, login + password) — Each hospital has its own login (e.g. fargona1 / 1234). The admin sees only their clinic: today's bookings, notifications feed (new booking / change / freed — green), working-hours setup down to the minute (e.g. 09:15–18:45, every 15/20/30 min), open/close slots with one click, queue calling, confirming arrivals ("Keldi"), and registering offline walk-in patients by phone. Reception name + phone is shown on every doctor card so people without the app can call.
+Admin panel (hidden, login + password) — Each hospital has its own login (credentials are handed to judges separately; only hashes are stored in code). The admin sees only their clinic: today's bookings, notifications feed (new booking / change / freed — green), working-hours setup down to the minute (e.g. 09:15–18:45, every 15/20/30 min), open/close slots with one click, queue calling, confirming arrivals ("Keldi"), and registering offline walk-in patients by phone. Reception name + phone is shown on every doctor card so people without the app can call.
 Drug price comparison — Shows the same medicine's cheap vs. expensive pharmacy prices.
 SMS simulation — Since there's no real SMS gateway in the MVP, all SMS messages appear in an on-screen log so judges can see the full flow: booking confirmation → turn called → warning → freed/passed.
-Demo flow for judges: Login (Farg'ona) → AI symptom → Book → Admin login (fargona1 / 1234) → Call next → watch the countdown → patient misses it → slot auto-passes to the next person with SMS + green admin alert.
+Demo flow for judges: Login (Farg'ona) → AI symptom → Book → Admin login → Call next → watch the countdown → patient misses it → slot auto-passes to the next person with SMS + green admin alert.

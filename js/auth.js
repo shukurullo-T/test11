@@ -4,8 +4,9 @@ function saveAdmin(a){if(a)localStorage.setItem('medbron_admin',JSON.stringify(a
 function doAdminLogin(){
   const l=document.getElementById('adminLogin').value.trim();
   const p=document.getElementById('adminPass').value;
-  const a=ADMINS.find(x=>x.login===l&&x.pass===p);
-  if(!a){toast('❌ Login yoki parol xato (demo: fargona1 / 1234)');return}
+  const a=ADMINS.find(x=>x.login===l&&x.hash===hashStr('medbron:'+l+':'+p));
+  if(!a){toast('❌ Login yoki parol xato');return}
+  document.getElementById('adminPass').value='';
   saveAdmin(a);toast(`✅ Xush kelibsiz, ${a.name}! (${a.clinic})`);
 }
 function adminLogout(){saveAdmin(null);toast('🚪 Admin chiqdi');}
@@ -94,20 +95,54 @@ function renderUser(){
     if(lf)lf.textContent=u.region;
   }else{
     if(login)login.classList.remove('hidden');
+    // oldin shu qurilmada ro'yxatdan o'tgan bo'lsa — "Kodim bor" oynasi ochiladi
+    if(document.getElementById('signinBox'))setLoginMode(getAccounts().length?'signin':'signup');
     if(badge)badge.innerHTML=`<button class="btn primary" onclick="document.getElementById('loginModal').classList.remove('hidden')">Kirish / Ro'yxatdan o'tish</button>`;
   }
+}
+/* ============ PIN KOD: ro'yxatdan o'tish / qayta kirish ============ */
+// Akkauntlar shu qurilmada saqlanadi; PIN ochiq emas, faqat xeshi turadi
+function getAccounts(){try{return JSON.parse(localStorage.getItem('medbron_accounts')||'[]')}catch{return[]}}
+function saveAccounts(a){localStorage.setItem('medbron_accounts',JSON.stringify(a))}
+const pinHash=(phone,pin)=>hashStr('pin:'+phone.replace(/\D/g,'').slice(-9)+':'+pin);
+function setLoginMode(mode){
+  const up=mode==='signup';
+  document.getElementById('signupBox').classList.toggle('hidden',!up);
+  document.getElementById('signinBox').classList.toggle('hidden',up);
+  document.getElementById('tabSignup').classList.toggle('active',up);
+  document.getElementById('tabSignin').classList.toggle('active',!up);
+}
+function doSignin(){
+  const name=document.getElementById('signinName').value.trim().toLowerCase();
+  const pin=document.getElementById('signinPin').value.trim();
+  if(name.length<3||!/^\d{4,6}$/.test(pin)){toast('⚠️ Ism va 4–6 xonali kodni kiriting');return}
+  const acc=getAccounts().find(a=>a.name.toLowerCase()===name&&a.pinHash===pinHash(a.phone,pin));
+  if(!acc){toast('❌ Ism yoki kod xato. Birinchi marta bo‘lsa — "Yangi ro‘yxat"');return}
+  document.getElementById('signinPin').value='';
+  saveUser({name:acc.name,phone:acc.phone,region:acc.region});
+  toast(`✅ Qaytganingizdan xursandmiz, ${acc.name}!`);
+  renderDoctors();renderMy();
 }
 function doLogin(){
   const name=document.getElementById('loginName').value.trim();
   const phone=document.getElementById('loginPhone').value.trim();
   const region=document.getElementById('loginRegion').value;
+  const pin=document.getElementById('loginPin').value.trim();
+  const pin2=document.getElementById('loginPin2').value.trim();
   if(name.length<3){toast('⚠️ Ismingizni to‘liq yozing');return}
   if(phone.replace(/\D/g,'').length<9){toast('⚠️ Telefon raqamni to‘g‘ri kiriting (+998...)');return}
   if(!region){toast('⚠️ Viloyatingizni tanlang');return}
+  if(!/^\d{4,6}$/.test(pin)){toast('⚠️ Kod 4–6 ta raqamdan iborat bo‘lsin');return}
+  if(pin!==pin2){toast('⚠️ Kodlar bir xil emas');return}
+  // shu telefon bilan akkaunt bo'lsa — yangilaymiz, bo'lmasa qo'shamiz
+  const key=phone.replace(/\D/g,'').slice(-9);
+  const accs=getAccounts().filter(a=>a.phone.replace(/\D/g,'').slice(-9)!==key);
+  accs.push({name,phone,region,pinHash:pinHash(phone,pin)});saveAccounts(accs);
+  document.getElementById('loginPin').value='';document.getElementById('loginPin2').value='';
   saveUser({name,phone,region});
   sendSMS(phone,`MedBron: Xush kelibsiz, ${name}! Siz ${region} viloyati sifatida kirdingiz. Endi faqat ${region} dagi klinikalar ko'rinadi.`);
   toast(`✅ Xush kelibsiz, ${name}! (${region})`);
-  renderDoctors();
+  renderDoctors();renderMy();
 }
 function logout(){localStorage.removeItem('medbron_user');renderUser();renderDoctors();toast('🚪 Chiqildi — qayta kiring');}
 function changeRegion(){

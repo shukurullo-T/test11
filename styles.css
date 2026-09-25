@@ -106,6 +106,9 @@ a.mini-btn{text-decoration:none;color:inherit;display:inline-block}
 .ai-note{margin-top:12px;font-size:12.5px;color:#64748b;border-top:1px dashed #cbd5e1;padding-top:8px}
 .ai-result.ai-danger{background:#fef2f2;border-color:#fca5a5}.ai-danger h3{color:#b91c1c}
 .danger{background:#dc2626;color:#fff}.danger:hover{background:#b91c1c}
+.login-tabs{display:flex;gap:6px;background:#f1f5f9;border-radius:12px;padding:4px;margin:8px 0 6px}
+.login-tab{flex:1;border:none;background:none;padding:9px;border-radius:9px;font-weight:700;color:#64748b;cursor:pointer}
+.login-tab.active{background:#fff;color:#0f172a;box-shadow:0 1px 3px rgba(0,0,0,.12)}
 .link-btn{background:none;border:none;color:#2563eb;font-weight:700;cursor:pointer;font-size:13px;margin-top:12px;text-decoration:underline}
 /* Foydalanuvchi belgisi */
 .ub-name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
@@ -197,3 +200,13 @@ section[id]{scroll-margin-top:80px}
   footer{padding:24px 16px;font-size:13px}
 }
 @keyframes sheetUp{from{transform:translateY(40px);opacity:.4}to{transform:none;opacity:1}}
+/* Qulaylik tugmalari, ovoz, katta shrift */
+.a11y{display:flex;gap:4px;margin-left:auto;margin-right:10px}
+.a11y-btn{border:1.5px solid #cbd5e1;background:#fff;border-radius:9px;padding:5px 8px;font-weight:800;font-size:13px;cursor:pointer;min-width:36px;color:#0f172a}
+.a11y-btn.on{background:#2563eb;border-color:#2563eb;color:#fff}
+.mic-btn{margin-top:10px;border:1.5px dashed #93c5fd;background:#eff6ff;color:#1d4ed8;border-radius:12px;padding:10px 14px;font-weight:700;font-size:14px;cursor:pointer;width:100%}
+.mic-btn.rec{background:#fee2e2;border-color:#f87171;color:#b91c1c;animation:pl 1s infinite}
+html.big body{zoom:1.18}
+.demo-tag{background:#334155;color:#cbd5e1;font-size:11px;padding:2px 8px;border-radius:8px;vertical-align:middle;font-weight:600}
+.privacy-note{font-size:12px;color:#64748b;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:8px 10px;margin-top:12px}
+@media(max-width:800px){.a11y{margin-right:4px}.a11y-btn{padding:4px 6px;min-width:32px;font-size:12px}}

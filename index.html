@@ -19,31 +19,35 @@
     <a href="#dorilar">Dorilar</a>
     <a href="#my" id="myCountBtn">Mening bronlarim (0)</a>
   </div>
+  <div class="a11y no-tr">
+    <button id="scriptBtn" class="a11y-btn" onclick="toggleScript()" title="Kirill / Lotin yozuvi">Кир</button>
+    <button id="bigBtn" class="a11y-btn" onclick="toggleBig()" title="Katta shrift">A+</button>
+  </div>
   <div id="userBadge" class="user-badge"></div>
 </nav>
 
 <header class="hero">
   <div class="hero-text">
-    <div class="badge">🇺🇿 O'zbekiston uchun #1 MedTech Startup • 2026</div>
+    <div class="badge">🇺🇿 «Raqamli avlod qizlari — 2026» • MVP demo</div>
     <h1>Poliklinikada <span>3 soat</span> navbat kutishga chek qo'ying.</h1>
-    <p>O'zbek tilida AI yordamchi → to'g'ri shifokorni topish → online bron → tirik navbat. Hammasi 2 daqiqada.</p>
+    <p>O'zbek tilida AI yordamchi → to'g'ri shifokorni topish → onlayn bron → tirik navbat. Hammasi 2 daqiqada.</p>
     <div class="hero-btns">
       <button class="btn primary" onclick="scrollToId('ai')">🤖 AI ga simptom yozish</button>
       <button class="btn ghost" onclick="scrollToId('doctors')">👨‍⚕️ Shifokor tanlash</button>
     </div>
     <div class="stats">
-      <div><b>12,400+</b><span>test foydalanuvchi</span></div>
-      <div><b>87%</b><span>navbat vaqti tejaldi</span></div>
-      <div><b>140+</b><span>ulanadigan klinikalar</span></div>
+      <div><b>14</b><span>viloyat qamrab olingan</span></div>
+      <div><b>14 kun</b><span>oldindan bron</span></div>
+      <div><b>3 daq</b><span>kelmasa — o'rin keyingisiga</span></div>
     </div>
   </div>
   <div class="hero-card">
-    <h3>🔴 Jonli navbat — Toshkent, 1-poliklinika</h3>
+    <h3>🔴 Jonli navbat <small class="demo-tag">namuna</small></h3>
     <div class="queue-demo">
       <div class="q-row"><span>Hozir qabulda:</span><b>#A-042</b></div>
       <div class="q-row highlight"><span>Sizning raqamingiz:</span><b id="demoQueue">#A-045</b></div>
       <div class="q-bar"><div class="q-fill"></div></div>
-      <p>Taxminiy kutish: <b>18 daqiqa</b> (avval 3 soat 20 daq edi)</p>
+      <p>Taxminiy kutish: <b>18 daqiqa</b> — uyda kutasiz, navbat kelganda SMS keladi</p>
     </div>
     <div class="mini-ai">
       <b>AI misol:</b>
@@ -57,6 +61,7 @@
   <p class="sub">Simptomlaringizni yozing — AI qaysi shifokorga borishni, shoshilinchlikni va nima qilishni aytadi.</p>
   <div class="ai-box">
     <textarea id="symptomInput" placeholder="Masalan: 3 kundan beri tomog'im og'riyapti, isitmam 38, yo'tal bor..."></textarea>
+    <button type="button" id="micBtn" class="mic-btn" onclick="voiceInput()">🎤 Ovoz bilan aytish</button>
     <div class="ai-chips">
       <button onclick="setSymptom('Boshim qattiq og\'riyapti, ko\'nglim ayniyapti, bosimim 150/100')">Bosh og'rig'i + bosim</button>
       <button onclick="setSymptom('Bolamda isitma 39, yo\'tal, holsizlik')">Bolada isitma</button>
@@ -75,8 +80,8 @@
     <input id="searchInput" placeholder="🔍 Ism, klinika qidiring..." oninput="renderDoctors()">
     <select id="specFilter" onchange="renderDoctors()">
       <option value="">Barcha mutaxassisliklar</option>
-      <option>Terapevt</option><option>Pediatr</option><option>Kardiolog</option>
-      <option>Stomatolog</option><option>Dermatolog</option><option>Nevrolog</option>
+      <option value="Terapevt">Terapevt</option><option value="Pediatr">Pediatr</option><option value="Kardiolog">Kardiolog</option>
+      <option value="Stomatolog">Stomatolog</option><option value="Dermatolog">Dermatolog</option><option value="Nevrolog">Nevrolog</option>
     </select>
     <select id="cityFilter" onchange="renderDoctors()">
       <option value="">Barcha viloyatlar</option>
@@ -113,10 +118,10 @@
   <p class="sub" id="adminInfo">🔒 Bu bo'lim faqat shifoxona xodimlari uchun. Bemorlar yuqoridan bron qiladi.</p>
   <div class="q-card" id="adminLoginBox">
     <h3>🔑 Admin kirish (login + parol)</h3>
-    <p class="sub">Har bir shifoxonaning o'z logini bor. Masalan: <b>fargona1 / 1234</b>, <b>toshkent1 / 1234</b>, <b>samarqand1 / 1234</b>, <b>andijon1 / 1234</b>. Asosiy menyuda ko'rinmaydi.</p>
+    <p class="sub">Har bir shifoxonaning o'z login va paroli bor — ularni shifoxona rahbariyati beradi.</p>
     <div class="filters">
-      <input id="adminLogin" placeholder="Login (masalan fargona1)">
-      <input id="adminPass" type="password" placeholder="Parol">
+      <input id="adminLogin" placeholder="Login" autocomplete="username">
+      <input id="adminPass" type="password" placeholder="Parol" autocomplete="current-password" onkeydown="if(event.key==='Enter')doAdminLogin()">
       <button class="btn primary" onclick="doAdminLogin()">Kirish →</button>
     </div>
   </div>
@@ -203,35 +208,51 @@
 </section>
 
 <section id="dorilar" class="section gray">
-  <h2>💊 Dori narxlarini solishtirish</h2>
-  <p class="sub">O'zbekistonda bir xil dori narxi 2-3 baravar farq qiladi. Biz eng arzon aptekani topamiz.</p>
+  <h2>💊 Dori narxlarini solishtirish <small>🔜 keyingi bosqich</small></h2>
+  <p class="sub">Reja: bir xil dorini qaysi aptekada arzonroq ekanini ko'rsatish. Hozircha bu <b>namuna narxlar</b> — aptekalar bilan hali ulanmagan.</p>
   <div class="pharm-grid" id="pharmGrid"></div>
 </section>
 
 <section id="biznes" class="section dark">
-  <h2>🚀 Nega MedBron 1-o'rin oladi?</h2>
+  <h2>🚀 MedBron — loyiha haqida</h2>
   <div class="pitch-grid">
-    <div class="pitch"><h3>😩 Muammo</h3><p>Yiliga 18 mln kishi poliklinikada o'rtacha 2.5 soat navbat kutadi. Qishloqlarda to'g'ri shifokor topish imkonsiz. Dori narxlarida tartibsizlik.</p></div>
-    <div class="pitch"><h3>✅ Yechim</h3><p>O'zbek tilidagi birinchi AI triaj + onlayn bron + tirik navbat + dori agregatori. Bitta ilovada.</p></div>
-    <div class="pitch"><h3>💰 Biznes model</h3><p>1) Klinikadan har brondan 8,000 so'm<br>2) Premium obuna 49,000 so'm/oy<br>3) Aptekalardan reklama. 2027 da 1.2 mlrd so'm daromad.</p></div>
-    <div class="pitch"><h3>🌍 Bozor</h3><p>O'zbekiston raqamli tibbiyot bozori: $180 mln. 36 mln aholining 70% smartfonga ega. Davlat "Digital Health 2030" dasturi bizni qo'llaydi.</p></div>
+    <div class="pitch"><h3>😩 Muammo</h3><p>Poliklinikada navbat soatlab cho'ziladi, odam qaysi shifokorga borishni bilmaydi. Bemor kelmasa, uning vaqti bekor ketadi — boshqalar esa kutib turadi.</p></div>
+    <div class="pitch"><h3>✅ Yechim</h3><p>Asosiy yo'l: <b>AI yo'naltirish → shifokor → bron → jonli navbat</b>. Kelmagan bemorning o'rni avtomatik keyingisiga o'tadi. Ilovani bilmaganlarni registratura qo'ng'iroq orqali yozadi.</p></div>
+    <div class="pitch"><h3>💰 Kim to'laydi?</h3><p>Bemor uchun doim <b>bepul</b>. Birinchi mijozlar — <b>xususiy klinikalar</b>: bo'sh qolgan vaqtlar kamayadi, registratura yengillashadi, shuning uchun oylik obuna to'laydi. Davlat poliklinikalari — keyinroq, pilot loyiha sifatida.</p></div>
+    <div class="pitch"><h3>🧭 Keyingi qadamlar</h3><p>1) 30–50 kishi bilan so'rovnoma<br>2) Bitta xususiy klinikada sinov<br>3) Haqiqiy SMS va server<br>4) Dori narxlari bo'limi</p></div>
   </div>
 </section>
 
 <footer>
-  <p><b>MedBron</b> — Startap MVP demo • Yaratuvchi: Sizning jamoangiz • Toshkent 2026</p>
-  <p>Hakamlar uchun: AI → Bron → Mening bronlarim zanjirini ko'rsating. Hammasi oflayn (internetsiz) ishlaydi.</p>
+  <p><b>MedBron</b> — «Raqamli avlod qizlari — 2026» tanlovi uchun loyiha</p>
+  <p id="authorLine"></p>
+  <p>🔒 Ism va telefon faqat shu qurilmada saqlanadi, hech qayerga yuborilmaydi. Haqiqiy versiyada ma'lumotlar himoyalangan serverda turadi va faqat bemor yozilgan klinikaga ko'rinadi.</p>
   <p><a href="#admin" onclick="scrollToId('admin');return false;" style="color:#2563eb;font-weight:700">Shifoxona xodimimisiz? Admin kirish →</a></p>
 </footer>
 
 <div id="loginModal" class="modal">
   <div class="modal-card">
-    <h3>🔑 Kirish — ism, nomer, viloyat</h3>
-    <p class="muted">Avval kiring, keyin bazaga kirasiz. Viloyatingizga qarab faqat o'sha yerdagi klinikalar chiqadi.</p>
-    <label>Ismingiz</label><input id="loginName" placeholder="Masalan: Jasur Karimov">
-    <label>Telefon nomeringiz</label><input id="loginPhone" type="tel" inputmode="tel" placeholder="+998 90 123 45 67">
-    <label>Qaysi viloyatdansiz?</label><select id="loginRegion" style="width:100%;padding:11px;border:1.5px solid #cbd5e1;border-radius:10px"></select>
-    <button class="btn primary full" onclick="doLogin()">Bazaga kirish →</button>
+    <h3>🔑 Kirish</h3>
+    <div class="login-tabs">
+      <button type="button" id="tabSignin" class="login-tab" onclick="setLoginMode('signin')">Kodim bor</button>
+      <button type="button" id="tabSignup" class="login-tab" onclick="setLoginMode('signup')">Yangi ro'yxat</button>
+    </div>
+    <div id="signinBox">
+      <p class="muted">Ro'yxatdan o'tganda o'zingiz yaratgan kod bilan kiring.</p>
+      <label>Ismingiz</label><input id="signinName" placeholder="Masalan: Jasur Karimov" autocomplete="username">
+      <label>Kodingiz</label><input id="signinPin" type="password" inputmode="numeric" maxlength="6" placeholder="••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doSignin()">
+      <button class="btn primary full" onclick="doSignin()">Kirish →</button>
+    </div>
+    <div id="signupBox" class="hidden">
+      <p class="muted">Birinchi marta: ism, nomer, viloyat va o'zingizga 4–6 xonali kod yarating. Keyingi safar shu kod bilan kirasiz.</p>
+      <label>Ismingiz</label><input id="loginName" placeholder="Masalan: Jasur Karimov" autocomplete="username">
+      <label>Telefon nomeringiz</label><input id="loginPhone" type="tel" inputmode="tel" placeholder="+998 90 123 45 67">
+      <label>Qaysi viloyatdansiz?</label><select id="loginRegion" style="width:100%;padding:11px;border:1.5px solid #cbd5e1;border-radius:10px"></select>
+      <label>Kod yarating (4–6 raqam)</label><input id="loginPin" type="password" inputmode="numeric" maxlength="6" placeholder="••••" autocomplete="new-password">
+      <label>Kodni takrorlang</label><input id="loginPin2" type="password" inputmode="numeric" maxlength="6" placeholder="••••" autocomplete="new-password" onkeydown="if(event.key==='Enter')doLogin()">
+      <button class="btn primary full" onclick="doLogin()">Ro'yxatdan o'tish →</button>
+    </div>
+    <p class="privacy-note">🔒 Ma'lumotlaringiz faqat shu telefonda saqlanadi va hech kimga yuborilmaydi. Kod o'rniga uning shifrlangan izi saqlanadi.</p>
     <button class="link-btn" onclick="document.getElementById('loginModal').classList.add('hidden');scrollToId('admin')">🏥 Shifoxona xodimiman — admin kirish</button>
   </div>
 </div>
@@ -275,5 +296,6 @@
 <script src="js/booking.js"></script>
 <script src="js/queue.js"></script>
 <script src="js/admin.js"></script>
+<script src="js/a11y.js"></script>
 </body>
 </html>

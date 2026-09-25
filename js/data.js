@@ -26,16 +26,16 @@ const drugs=[
 const DEFAULT_SLOTS=["09:00","10:00","11:30","13:00","15:00","16:30"];
 const MAX_ADVANCE_DAYS=14; // 1-2 hafta oldin bron qilish mumkin
 // Har bir shifoxonaning ro'yxat (reception) admini — login+parol bilan kiradi.
-// Demo loginlar: fargona1 / 1234, toshkent1 / 1234, samarqand1 / 1234, andijon1 / 1234
+// Parollar kodda ochiq saqlanmaydi — faqat xeshi (hashStr). Loginlar hakamlarga alohida beriladi.
 const ADMINS=[
-{login:"fargona1",pass:"1234",name:"Dilfuza Yo'ldosheva",phone:"+998 73 244 55 66",clinic:"Sog'lom Oila",city:"Farg'ona"},
-{login:"fargona2",pass:"1234",name:"Oybek Qodirov",phone:"+998 73 244 55 67",clinic:"Teri Go'zallik",city:"Farg'ona"},
-{login:"toshkent1",pass:"1234",name:"Malika Karimova",phone:"+998 71 244 88 99",clinic:"Shifo Nur klinikasi",city:"Toshkent"},
-{login:"toshkent2",pass:"1234",name:"Jasur Hakimov",phone:"+998 71 244 88 98",clinic:"Yurak Markazi",city:"Toshkent"},
-{login:"toshkent3",pass:"1234",name:"Nodira Azimova",phone:"+998 71 244 88 97",clinic:"Oq Tabassum",city:"Toshkent"},
-{login:"toshkent4",pass:"1234",name:"Sardor Ergashev",phone:"+998 71 244 88 96",clinic:"Miya-Nerv Markazi",city:"Toshkent"},
-{login:"samarqand1",pass:"1234",name:"Gulnora Tosheva",phone:"+998 66 233 44 55",clinic:"Bola Salomatligi",city:"Samarqand"},
-{login:"andijon1",pass:"1234",name:"Bekzod Umarov",phone:"+998 74 223 33 44",clinic:"Mehrli Ona",city:"Andijon"},
+{login:"fargona1",hash:"y4ebem27bs",name:"Dilfuza Yo'ldosheva",phone:"+998 73 244 55 66",clinic:"Sog'lom Oila",city:"Farg'ona"},
+{login:"fargona2",hash:"q8yrxgmjtx",name:"Oybek Qodirov",phone:"+998 73 244 55 67",clinic:"Teri Go'zallik",city:"Farg'ona"},
+{login:"toshkent1",hash:"1tl1m7g51lk",name:"Malika Karimova",phone:"+998 71 244 88 99",clinic:"Shifo Nur klinikasi",city:"Toshkent"},
+{login:"toshkent2",hash:"17c8dofx10b",name:"Jasur Hakimov",phone:"+998 71 244 88 98",clinic:"Yurak Markazi",city:"Toshkent"},
+{login:"toshkent3",hash:"ix8jz026ta",name:"Nodira Azimova",phone:"+998 71 244 88 97",clinic:"Oq Tabassum",city:"Toshkent"},
+{login:"toshkent4",hash:"17ev8skfbam",name:"Sardor Ergashev",phone:"+998 71 244 88 96",clinic:"Miya-Nerv Markazi",city:"Toshkent"},
+{login:"samarqand1",hash:"26sd21lba5w",name:"Gulnora Tosheva",phone:"+998 66 233 44 55",clinic:"Bola Salomatligi",city:"Samarqand"},
+{login:"andijon1",hash:"1m37s2fvwnd",name:"Bekzod Umarov",phone:"+998 74 223 33 44",clinic:"Mehrli Ona",city:"Andijon"},
 ];
 function adminOfClinic(clinic){return ADMINS.find(a=>a.clinic===clinic)||null}
 function adminOfDoctor(docId){const d=doctors.find(x=>x.id===docId);return d?adminOfClinic(d.clinic):null}
@@ -43,6 +43,8 @@ let selectedDoctor=null,selectedTime=null;
 let GRACE_SECONDS=30;
 function setGrace(v){GRACE_SECONDS=parseInt(v,10);toast('⏱ Kutish vaqti: '+fmtDur(GRACE_SECONDS));tickQueue();}
 function fmtDur(s){if(s>=60){const m=Math.floor(s/60);const r=s%60;return r?m+' daq '+r+' son':m+' daqiqa'}return s+' soniya'}
+// Parol/PIN xeshi (cyrb53). Eslatma: serversiz demo — haqiqiy himoya uchun backend kerak.
+function hashStr(str,seed=7){let h1=0xdeadbeef^seed,h2=0x41c6ce57^seed;for(let i=0,ch;i<str.length;i++){ch=str.charCodeAt(i);h1=Math.imul(h1^ch,2654435761);h2=Math.imul(h2^ch,1597334677)}h1=Math.imul(h1^(h1>>>16),2246822507);h1^=Math.imul(h2^(h2>>>13),3266489909);h2=Math.imul(h2^(h2>>>16),2246822507);h2^=Math.imul(h1^(h1>>>13),3266489909);return (4294967296*(2097151&h2)+(h1>>>0)).toString(36)}
 // Foydalanuvchi yozgan matnni HTML ga xavfsiz qo'yish (<script> va h.k. ishlamasin)
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function fmtLeft(ms){const s=Math.max(0,Math.ceil(ms/1000));const m=Math.floor(s/60);const r=s%60;return (m>0?m+':':'0:')+String(r).padStart(2,'0')}

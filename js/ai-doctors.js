@@ -2,7 +2,10 @@ function scrollToId(id){const e=document.getElementById(id);if(e)e.scrollIntoVie
 function setSymptom(t){document.getElementById('symptomInput').value=t;aiDiagnose()}
 function aiDiagnose(){
   // o'zbekcha tutuq belgilarining barcha turlarini (‘ ’ ʻ ʼ `) bitta ' ga keltiramiz
-  const v=document.getElementById('symptomInput').value.toLowerCase().replace(/[‘’ʻʼ`]/g,"'");
+  let raw=document.getElementById('symptomInput').value;
+  // kirillda yozilgan yoki ovozdan kelgan matnni lotinga o'giramiz
+  if(/[а-яёўқғҳ]/i.test(raw)&&typeof toLatin==='function')raw=toLatin(raw);
+  const v=raw.toLowerCase().replace(/[‘’ʻʼ`]/g,"'");
   const box=document.getElementById('aiResult');
   box.classList.remove('hidden','ai-danger');
   if(v.trim().length<5){box.innerHTML="⚠️ Iltimos, simptomni batafsilroq yozing.";return}
