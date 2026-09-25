@@ -4,15 +4,20 @@
  * Ism va telefon YUBORILMAYDI — faqat ovoz, sabablar va izoh.
  */
 const SHEET_NAME = 'Fikrlar';
+// Skript jadvalning o'zidan (Kengaytmalar → Apps Script) ochilgan bo'lsa — bo'sh qoldiring.
+// Alohida (script.new) yaratilgan bo'lsa — jadval havolasidagi /d/.../ orasidagi ID ni yozing.
+const SHEET_ID = '';
 
 function sheet_() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const ss = SHEET_ID ? SpreadsheetApp.openById(SHEET_ID) : SpreadsheetApp.getActiveSpreadsheet();
   let sh = ss.getSheetByName(SHEET_NAME);
   if (!sh) {
     sh = ss.insertSheet(SHEET_NAME);
     sh.appendRow(['id', 'vaqt', 'ovoz', 'sabablar', 'izoh']);
     sh.setFrozenRows(1);
   }
+  // vaqt ustuni matn bo'lib tursin — jadval va skript vaqt mintaqalari chalkashmasin
+  if (sh.getRange('B2').getNumberFormat() !== '@') sh.getRange('B:B').setNumberFormat('@');
   return sh;
 }
 
@@ -30,7 +35,8 @@ function doPost(e) {
     const d = JSON.parse(e.postData.contents);
     if (!/^f[a-z0-9]{4,20}$/.test(d.id) || ['up', 'down'].indexOf(d.vote) < 0) return out_({ ok: false });
     const tags = (Array.isArray(d.tags) ? d.tags : []).slice(0, 5).map(t => safe_(t, 40)).join(', ');
-    const row = [d.id, new Date(), d.vote === 'up' ? '👍' : '👎', tags, safe_(d.text, 500)];
+    const now = Utilities.formatDate(new Date(), 'Asia/Tashkent', 'yyyy-MM-dd HH:mm');
+    const row = [d.id, now, d.vote === 'up' ? '👍' : '👎', tags, safe_(d.text, 500)];
     const sh = sheet_();
     const n = sh.getLastRow() - 1;
     const ids = n > 0 ? sh.getRange(2, 1, n, 1).getValues().map(r => r[0]) : [];
@@ -50,7 +56,7 @@ function doGet() {
   const rows = n > 0 ? sh.getRange(2, 1, n, 5).getValues() : [];
   const items = rows.filter(r => r[0]).map(r => ({
     id: r[0],
-    time: Utilities.formatDate(new Date(r[1]), 'Asia/Tashkent', 'yyyy-MM-dd HH:mm'),
+    time: r[1] instanceof Date ? Utilities.formatDate(r[1], 'Asia/Tashkent', 'yyyy-MM-dd HH:mm') : String(r[1]),
     vote: r[2] === '👍' ? 'up' : 'down',
     tags: r[3] ? String(r[3]).split(', ') : [],
     text: String(r[4] || '').replace(/^'/, '')

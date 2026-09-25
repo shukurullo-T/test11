@@ -26,7 +26,7 @@ const drugs=[
 const DEFAULT_SLOTS=["09:00","10:00","11:30","13:00","15:00","16:30"];
 // Google Sheets'ga ulangan skript havolasi (README: "Fikrlarni Google Sheets'ga ulash").
 // Bo'sh bo'lsa — fikrlar faqat shu qurilmada saqlanadi.
-const FEEDBACK_URL='';
+const FEEDBACK_URL='https://script.google.com/macros/s/AKfycbxPTvuXhCTW0EjYi0_AuC_9HJVVLQvCLFvFSB8RElmR_9H67i8WbTcEgricPvW9E13znA/exec';
 const MAX_ADVANCE_DAYS=14; // 1-2 hafta oldin bron qilish mumkin
 // Har bir shifoxonaning ro'yxat (reception) admini — login+parol bilan kiradi.
 // Parollar kodda ochiq saqlanmaydi — faqat xeshi (hashStr). Loginlar hakamlarga alohida beriladi.
