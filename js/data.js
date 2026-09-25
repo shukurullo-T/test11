@@ -24,6 +24,9 @@ const drugs=[
 {name:"Omeprazol 20mg",cheap:"15 000 so'm • Dori-Darmon",exp:"32 000 so'm • Markaziy"},
 ];
 const DEFAULT_SLOTS=["09:00","10:00","11:30","13:00","15:00","16:30"];
+// Google Sheets'ga ulangan skript havolasi (README: "Fikrlarni Google Sheets'ga ulash").
+// Bo'sh bo'lsa — fikrlar faqat shu qurilmada saqlanadi.
+const FEEDBACK_URL='';
 const MAX_ADVANCE_DAYS=14; // 1-2 hafta oldin bron qilish mumkin
 // Har bir shifoxonaning ro'yxat (reception) admini — login+parol bilan kiradi.
 // Parollar kodda ochiq saqlanmaydi — faqat xeshi (hashStr). Loginlar hakamlarga alohida beriladi.

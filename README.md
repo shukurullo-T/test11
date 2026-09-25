@@ -36,6 +36,22 @@ Har bir klinikaning o'z logini bor. Login va parollar **hakamlarga alohida (qog'
 | `js/queue.js` | Jonli navbat, chaqiruv, demo ma'lumotlar |
 | `js/admin.js` | Admin panel, registratura, ishga tushirish |
 
+## Fikrlarni Google Sheets'ga ulash
+
+"Dastur sizga yoqdimi?" bo'limidagi 👍/👎, sabablar va izohlar barcha telefonlardan bitta Google jadvalga yig'iladi. Ism va telefon yuborilmaydi.
+
+1. [sheets.new](https://sheets.new) — yangi Google jadval oching, nomini `MedBron fikrlar` qiling.
+2. Menyu: **Kengaytmalar → Apps Script** (Extensions → Apps Script).
+3. Ochilgan oynadagi hamma kodni o'chirib, [`google-sheets/Code.gs`](google-sheets/Code.gs) faylidagi kodni joylang va 💾 saqlang.
+4. **Joylashtirish → Yangi joylashtirish** (Deploy → New deployment) → turi: **Veb-ilova** (Web app).
+   - *Kim nomidan ishga tushadi:* **Men** (Me)
+   - *Kimda ruxsat bor:* **Hamma** (Anyone)
+5. **Joylashtirish** ni bosing → Google ruxsat so'raydi → hisobingizni tanlang → *Advanced → Go to ... (unsafe)* → *Allow*.
+6. Chiqqan **Veb-ilova havolasini** (`https://script.google.com/macros/s/.../exec`) nusxalang.
+7. [`js/data.js`](js/data.js) dagi `const FEEDBACK_URL='';` qatoriga shu havolani qo'ying va GitHub'ga yuklang.
+
+Shundan keyin admin panelidagi "💬 Foydalanuvchi fikrlari" kartasi barcha foydalanuvchilarning fikrini ko'rsatadi, jadvalda esa har bir fikr alohida qator bo'lib turadi.
+
 ## Cheklovlar (MVP)
 
 - Server yo'q: ma'lumotlar faqat shu brauzerda saqlanadi, SMS — simulyatsiya.

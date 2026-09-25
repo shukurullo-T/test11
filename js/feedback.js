@@ -1,5 +1,5 @@
 /* ============ FIKR-MULOHAZA: bir bosishda 👍/👎 + ixtiyoriy sabab va izoh ============ */
-// Eslatma: server yo'q — fikrlar shu qurilmada saqlanadi (admin shu qurilmada ko'radi)
+// Fikrlar shu qurilmada saqlanadi; FEEDBACK_URL berilgan bo'lsa — Google Sheets jadvaliga ham yuboriladi
 const FB_TAGS={
   up:['Qulay','Tez ishlaydi','AI foydali','Navbat tizimi zo‘r','Chiroyli'],
   down:['Tushunarsiz','Sekin','Shifokor topilmadi','Xato chiqdi','Kerakli narsa yo‘q']
@@ -13,7 +13,18 @@ function upsertMyFb(patch){
   if(!f){id='f'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);f={id,vote:null,tags:[],text:''};list.push(f);localStorage.setItem('medbron_myfb',id)}
   const u=getUser();
   Object.assign(f,patch,{who:u?u.name:'Mehmon',time:new Date().toLocaleString('uz-UZ')});
-  saveFb(list);return f;
+  saveFb(list);syncFb(f);return f;
+}
+// Google Sheets'ga yuborish. Ism/telefon yuborilmaydi. Sabablar tez-tez bosilganda — oxirgisini yuboramiz
+let fbTimer=null;
+function syncFb(f){
+  if(!FEEDBACK_URL||!f.vote)return;
+  clearTimeout(fbTimer);
+  fbTimer=setTimeout(()=>{
+    // text/plain + no-cors: Google Apps Script shunday qabul qiladi (javobni o'qish shart emas)
+    fetch(FEEDBACK_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body:JSON.stringify({id:f.id,vote:f.vote,tags:f.tags,text:f.text||''})}).catch(()=>{});
+  },700);
 }
 function fbVote(v){
   const cur=myFb();
@@ -47,14 +58,19 @@ function renderFb(){
 function renderFbAdmin(){
   const box=document.getElementById('fbAdmin');if(!box)return;
   if(!getAdmin()){box.innerHTML='';return}
-  const list=getFb().filter(f=>f.vote);
+  if(!FEEDBACK_URL){drawFbAdmin(box,getFb().filter(f=>f.vote),'📱 Faqat shu qurilmadagi fikrlar');return}
+  box.innerHTML='<p class="sub">⏳ Google Sheets’dan yuklanmoqda...</p>';
+  fetch(FEEDBACK_URL).then(r=>r.json()).then(d=>drawFbAdmin(box,(d.items||[]).filter(f=>f.vote),'🌐 Barcha foydalanuvchilar (Google Sheets)'))
+    .catch(()=>drawFbAdmin(box,getFb().filter(f=>f.vote),'⚠️ Jadvalga ulanib bo‘lmadi — shu qurilmadagi fikrlar'));
+}
+function drawFbAdmin(box,list,src){
   const up=list.filter(f=>f.vote==='up').length,down=list.length-up;
   const pct=list.length?Math.round(up*100/list.length):0;
   const tagCount={};list.forEach(f=>f.tags.forEach(t=>tagCount[t]=(tagCount[t]||0)+1));
   const tags=Object.entries(tagCount).sort((a,b)=>b[1]-a[1]).map(([t,n])=>`<span class="fb-chip">${esc(t)} <b>${n}</b></span>`).join('');
-  const texts=list.filter(f=>f.text).slice().reverse().map(f=>`<div class="feed-item ${f.vote==='up'?'feed-freed':'feed-change'}"><div>${f.vote==='up'?'👍':'👎'} ${esc(f.text)}</div><small>${esc(f.who||'')} • ${f.time||''}</small></div>`).join('');
-  box.innerHTML=list.length?`<div class="fb-stats"><div><b>👍 ${up}</b><span>yoqdi</span></div><div><b>👎 ${down}</b><span>yoqmadi</span></div><div><b>${pct}%</b><span>mamnun</span></div></div><div class="fb-bar"><div style="width:${pct}%"></div></div>${tags?`<p class="sub" style="margin:10px 0 6px">Ko‘p tanlangan sabablar:</p><div class="fb-chips">${tags}</div>`:''}${texts||'<p class="sub" style="margin-top:10px">Hali yozma izoh yo‘q.</p>'}`
-    :'<p class="sub">Hali fikr yo‘q. Pastdagi "Dastur sizga yoqdimi?" bo‘limida 👍/👎 bosilsa shu yerda chiqadi.</p>';
+  const texts=list.filter(f=>f.text).slice().reverse().map(f=>`<div class="feed-item ${f.vote==='up'?'feed-freed':'feed-change'}"><div>${f.vote==='up'?'👍':'👎'} ${esc(f.text)}</div><small>${f.who?esc(f.who)+' • ':''}${esc(f.time||'')}</small></div>`).join('');
+  box.innerHTML=`<p class="fb-src">${src} • ${list.length} ta</p>`+(list.length?`<div class="fb-stats"><div><b>👍 ${up}</b><span>yoqdi</span></div><div><b>👎 ${down}</b><span>yoqmadi</span></div><div><b>${pct}%</b><span>mamnun</span></div></div><div class="fb-bar"><div style="width:${pct}%"></div></div>${tags?`<p class="sub" style="margin:10px 0 6px">Ko‘p tanlangan sabablar:</p><div class="fb-chips">${tags}</div>`:''}${texts||'<p class="sub" style="margin-top:10px">Hali yozma izoh yo‘q.</p>'}`
+    :'<p class="sub">Hali fikr yo‘q. Pastdagi "Dastur sizga yoqdimi?" bo‘limida 👍/👎 bosilsa shu yerda chiqadi.</p>');
 }
 
 /* ============ BRON UCHUN QO'SHIMCHALAR: xarita, kalendar, qabul bahosi ============ */
