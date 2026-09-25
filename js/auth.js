@@ -27,7 +27,7 @@ function renderAdmin(){
     if(box)box.classList.remove('hidden');
     const loginBox=document.getElementById('adminLoginBox');
     if(loginBox)loginBox.classList.add('hidden');
-    renderAdminDocs();renderAdminFeed();
+    renderAdminDocs();renderAdminFeed();if(typeof renderFbAdmin==='function')renderFbAdmin();
   }else{
     if(navBtn)navBtn.classList.add('hidden');
     // admin kirish oynasini ko'rsatamiz, lekin ichki sozlamalarni berkitamiz

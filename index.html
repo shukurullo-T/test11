@@ -161,6 +161,10 @@
     <div id="adminFeed" class="sms-log"></div>
   </div>
   <div class="q-card" style="margin-top:16px">
+    <h3>💬 Foydalanuvchi fikrlari</h3>
+    <div id="fbAdmin"></div>
+  </div>
+  <div class="q-card" style="margin-top:16px">
     <h3>🕒 Ish soatlarini sozlash <small>daqiqagacha</small></h3>
     <p class="sub">Ish boshlanish-tugash vaqtini yozing (masalan 09:15 – 18:45), oraliqni tanlang (15/20/30 daq), alohida soat qo'shing. Bitta odam olgan soat avtomatik <b>⛔ band</b> — keyingi odam ololmaydi.</p>
     <div class="filters">
@@ -219,6 +223,24 @@
     <div class="pitch"><h3>✅ Yechim</h3><p>Asosiy yo'l: <b>AI yo'naltirish → shifokor → bron → jonli navbat</b>. Kelmagan bemorning o'rni avtomatik keyingisiga o'tadi. Ilovani bilmaganlarni registratura qo'ng'iroq orqali yozadi.</p></div>
     <div class="pitch"><h3>💰 Kim to'laydi?</h3><p>Bemor uchun doim <b>bepul</b>. Birinchi mijozlar — <b>xususiy klinikalar</b>: bo'sh qolgan vaqtlar kamayadi, registratura yengillashadi, shuning uchun oylik obuna to'laydi. Davlat poliklinikalari — keyinroq, pilot loyiha sifatida.</p></div>
     <div class="pitch"><h3>🧭 Keyingi qadamlar</h3><p>1) 30–50 kishi bilan so'rovnoma<br>2) Bitta xususiy klinikada sinov<br>3) Haqiqiy SMS va server<br>4) Dori narxlari bo'limi</p></div>
+  </div>
+</section>
+
+<section id="fikr" class="section">
+  <div class="fb-card">
+    <h2>💬 Dastur sizga yoqdimi?</h2>
+    <p class="sub">Bitta bosish kifoya — yozish shart emas.</p>
+    <div class="fb-votes">
+      <button type="button" class="fb-vote up" id="fbUp" onclick="fbVote('up')"><span>👍</span>Yoqdi</button>
+      <button type="button" class="fb-vote down" id="fbDown" onclick="fbVote('down')"><span>👎</span>Yoqmadi</button>
+    </div>
+    <div id="fbMore" class="hidden">
+      <p class="fb-thanks" id="fbThanks"></p>
+      <div class="fb-tags" id="fbTags"></div>
+      <p class="fb-saved" id="fbSaved"></p>
+      <textarea id="fbText" maxlength="500" placeholder="Izoh yozish ixtiyoriy — nimani qo'shaylik yoki o'zgartiraylik?"></textarea>
+      <button type="button" class="btn primary" onclick="fbSend()">Izohni yuborish</button>
+    </div>
   </div>
 </section>
 
@@ -294,6 +316,7 @@
 <script src="js/ai-doctors.js"></script>
 <script src="js/booking.js"></script>
 <script src="js/queue.js"></script>
+<script src="js/feedback.js"></script>
 <script src="js/admin.js"></script>
 <script src="js/a11y.js"></script>
 </body>

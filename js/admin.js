@@ -17,7 +17,7 @@ function renderAdminToday(){
   const freedKeys=new Set(feed.filter(f=>f.type==='freed'&&f.booking).map(f=>f.booking.num+'_'+f.booking.date+'_'+f.booking.time));
   box.innerHTML=books.length?books.map(b=>{
     const freed=freedKeys.has(b.num+'_'+b.date+'_'+b.time);
-    return `<div class="q-item ${b.status}${freed?' freed-hl':''}"><span><b>${b.num}</b> ${esc(b.name)} • ${b.date} ${b.time} • ${esc(b.doc)}${freed?' 🟢 bo‘shagan edi':''}<br><a href="tel:${esc((b.phone||'').replace(/\s/g,''))}">📞 ${esc(b.phone)} ga qo'ng'iroq qilish</a></span><span class="st ${b.status==='waiting'?'st-wait':(b.status==='called'?'st-call':'st-ok')}">${b.status}</span></div>`;
+    return `<div class="q-item ${b.status}${freed?' freed-hl':''}"><span><b>${b.num}</b> ${esc(b.name)} • ${b.date} ${b.time} • ${esc(b.doc)}${freed?' 🟢 bo‘shagan edi':''}${b.rating==='up'?' • 👍 qabul yoqdi':b.rating==='down'?' • 👎 qabul yoqmadi':''}<br><a href="tel:${esc((b.phone||'').replace(/\s/g,''))}">📞 ${esc(b.phone)} ga qo'ng'iroq qilish</a></span><span class="st ${b.status==='waiting'?'st-wait':(b.status==='called'?'st-call':'st-ok')}">${b.status}</span></div>`;
   }).join(''):`<p class="sub">Bu klinikada hali bron yo'q.</p>`;
 }
 // Admin offline bemorni (ilovani bilmagan, shifoxonaga kelgan) bo'sh vaqtga qo'yadi
@@ -113,7 +113,7 @@ function toast(t){const e=document.getElementById('toast');if(!e)return;e.textCo
   const ad=document.getElementById('adminDate');
   if(ad){ad.value=todayStr();ad.min=todayStr();ad.max=addDaysStr(todayStr(),MAX_ADVANCE_DAYS-1);}
 })();
-renderUser();renderDoctors();renderPharm();renderMy();renderSms();renderAdmin();
+renderUser();renderDoctors();renderPharm();renderMy();renderSms();renderAdmin();renderFb();
 const graceSel=document.getElementById('graceSel');
 if(graceSel)graceSel.value=String(GRACE_SECONDS);
 tickQueue();setInterval(()=>tickQueue(),1000);

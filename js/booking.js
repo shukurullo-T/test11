@@ -133,6 +133,7 @@ function renderMy(){
     // "Keldi" ni faqat admin bosadi — bemorda faqat vaqtni o'zgartirish + bekor qilish
     if(b.status==='waiting'||b.status==='called')actions=`<button class="mini-btn" onclick="postponeBook(${i})">Vaqtni o'zgartirish ⏩</button>`;
     else if(b.status==='skipped')actions=`<button class="mini-btn" onclick="rebook(${i})">Qayta navbat 🔁</button>`;
+    actions+=ticketExtras(b);
     actions+=`<button class="cancel" onclick="cancelBook(${i})">Bekor qilish</button>`;
     return `<div class="ticket ${b.status}"><div><b>${b.num}</b> • ${esc(b.doc)}<br><small>📅 ${b.date} ⏰ ${b.time} • 👤 ${esc(b.name)} • 👥 ${b.persons||1} • 📞 ${esc(b.phone)}<br>📌 ${esc(b.clinic||'')}, ${esc(b.city)}</small><br>${statusBadge(b)}</div><div class="ticket-btns">${actions}</div></div>`;
   }).join(''):`<p class="sub">Hali bron yo'q. ${esc(u.region)} dan shifokor tanlang.</p>`;
