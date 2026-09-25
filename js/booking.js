@@ -96,7 +96,8 @@ function confirmBooking(){
   if(closed.includes(selectedTime)){toast('🔒 Bu soat yopiq');refreshSlots();return}
   const books=getBooks();
   const num=newBookNum(books);
-  const nb={num,docId:selectedDoctor.id,doc:selectedDoctor.name,spec:selectedDoctor.spec,clinic:selectedDoctor.clinic,city:selectedDoctor.city,date,time:selectedTime,name,phone,persons,status:'waiting',createdAt:Date.now(),postponed:0};
+  // owner — bronni qilgan akkaunt (boshqa odam uchun boshqa raqam yozilsa ham, bron shu akkauntda ko'rinadi)
+  const nb={num,owner:userId(getUser()),docId:selectedDoctor.id,doc:selectedDoctor.name,spec:selectedDoctor.spec,clinic:selectedDoctor.clinic,city:selectedDoctor.city,date,time:selectedTime,name,phone,persons,status:'waiting',createdAt:Date.now(),postponed:0};
   books.push(nb);
   saveBooks(books);closeModal();
   sendSMS(phone,`MedBron: ${name}! ${selectedDoctor.clinic} (${selectedDoctor.city}, ${selectedDoctor.addr}) ga bron: ${num}, ${date} ${selectedTime}, ${persons} kishi. Bu soat endi band — boshqalar ololmaydi. Navbat kelganda registraturaga ${num} raqamini ayting.`);
@@ -115,7 +116,9 @@ function statusBadge(b){
 }
 function renderMy(){
   const u=getUser();
-  const books=getBooks().filter(b=>!u||b.phone===u.phone);
+  // faqat shu akkauntning bronlari; eski (egasi yozilmagan) bronlar — telefon raqami bo'yicha
+  const me=userId(u);
+  const books=u?getBooks().filter(b=>b.owner?b.owner===me:phoneKey(b.phone)===phoneKey(u.phone)):[];
   const btn=document.getElementById('myCountBtn');
   if(btn)btn.textContent=`Mening bronlarim (${books.length})`;
   const bn=document.getElementById('bnCount');

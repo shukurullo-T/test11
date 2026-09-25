@@ -104,7 +104,10 @@ function renderUser(){
 // Akkauntlar shu qurilmada saqlanadi; PIN ochiq emas, faqat xeshi turadi
 function getAccounts(){try{return JSON.parse(localStorage.getItem('medbron_accounts')||'[]')}catch{return[]}}
 function saveAccounts(a){localStorage.setItem('medbron_accounts',JSON.stringify(a))}
-const pinHash=(phone,pin)=>hashStr('pin:'+phone.replace(/\D/g,'').slice(-9)+':'+pin);
+const phoneKey=p=>(p||'').replace(/\D/g,'').slice(-9);
+const pinHash=(phone,pin)=>hashStr('pin:'+phoneKey(phone)+':'+pin);
+// har bir akkauntning o'z ID si — bronlar shu ID ga bog'lanadi (telefonga emas)
+function userId(u){return u?(u.id||'p'+phoneKey(u.phone)):null}
 function setLoginMode(mode){
   const up=mode==='signup';
   document.getElementById('signupBox').classList.toggle('hidden',!up);
@@ -119,7 +122,7 @@ function doSignin(){
   const acc=getAccounts().find(a=>a.name.toLowerCase()===name&&a.pinHash===pinHash(a.phone,pin));
   if(!acc){toast('❌ Ism yoki kod xato. Birinchi marta bo‘lsa — "Yangi ro‘yxat"');return}
   document.getElementById('signinPin').value='';
-  saveUser({name:acc.name,phone:acc.phone,region:acc.region});
+  saveUser({id:acc.id,name:acc.name,phone:acc.phone,region:acc.region});
   toast(`✅ Qaytganingizdan xursandmiz, ${acc.name}!`);
   renderDoctors();renderMy();
 }
@@ -134,17 +137,18 @@ function doLogin(){
   if(!region){toast('⚠️ Viloyatingizni tanlang');return}
   if(!/^\d{4,6}$/.test(pin)){toast('⚠️ Kod 4–6 ta raqamdan iborat bo‘lsin');return}
   if(pin!==pin2){toast('⚠️ Kodlar bir xil emas');return}
-  // shu telefon bilan akkaunt bo'lsa — yangilaymiz, bo'lmasa qo'shamiz
-  const key=phone.replace(/\D/g,'').slice(-9);
-  const accs=getAccounts().filter(a=>a.phone.replace(/\D/g,'').slice(-9)!==key);
-  accs.push({name,phone,region,pinHash:pinHash(phone,pin)});saveAccounts(accs);
+  // bitta raqam — bitta akkaunt. Aks holda boshqa odam shu raqam bilan kirib, eski egasining bronlarini ko'rardi
+  const accs=getAccounts();
+  if(accs.some(a=>phoneKey(a.phone)===phoneKey(phone))){toast('⚠️ Bu raqam allaqachon ro‘yxatdan o‘tgan — "Kodim bor" orqali kiring');setLoginMode('signin');return}
+  const id='a'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+  accs.push({id,name,phone,region,pinHash:pinHash(phone,pin)});saveAccounts(accs);
   document.getElementById('loginPin').value='';document.getElementById('loginPin2').value='';
-  saveUser({name,phone,region});
+  saveUser({id,name,phone,region});
   sendSMS(phone,`MedBron: Xush kelibsiz, ${name}! Siz ${region} viloyati sifatida kirdingiz. Endi faqat ${region} dagi klinikalar ko'rinadi.`);
   toast(`✅ Xush kelibsiz, ${name}! (${region})`);
   renderDoctors();renderMy();
 }
-function logout(){localStorage.removeItem('medbron_user');renderUser();renderDoctors();toast('🚪 Chiqildi — qayta kiring');}
+function logout(){localStorage.removeItem('medbron_user');renderUser();renderDoctors();renderMy();toast('🚪 Chiqildi — qayta kiring');}
 function changeRegion(){
   const u=getUser();if(!u)return;
   const cur=prompt('Qaysi viloyat? Ro‘yxatdan tanlang:\n'+REGIONS.join(', '),u.region);
