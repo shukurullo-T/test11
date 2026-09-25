@@ -52,6 +52,8 @@ Har bir klinikaning o'z logini bor. Login va parollar **hakamlarga alohida (qog'
 
 Shundan keyin admin panelidagi "💬 Foydalanuvchi fikrlari" kartasi barcha foydalanuvchilarning fikrini ko'rsatadi, jadvalda esa har bir fikr alohida qator bo'lib turadi.
 
+Shu skript **bemor akkauntlarini** ham saqlaydi ("Akkauntlar" varag'i), shuning uchun bir marta ro'yxatdan o'tgan odam istalgan brauzer yoki telefondan kira oladi. PIN kodning o'zi saqlanmaydi (faqat xeshi), akkauntlar ro'yxati tashqariga berilmaydi, 5 ta xato urinishdan keyin shu ism 10 daqiqaga bloklanadi. Bronlar hozircha har bir qurilmada alohida saqlanadi.
+
 ## Cheklovlar (MVP)
 
 - Server yo'q: ma'lumotlar faqat shu brauzerda saqlanadi, SMS — simulyatsiya.

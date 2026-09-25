@@ -234,3 +234,9 @@ html.big body{zoom:1.18}
 .rated{font-size:13px;font-weight:700;color:#166534;background:#dcfce7;border-radius:8px;padding:8px 10px}
 @media(max-width:800px){.fb-card{padding:18px 14px}.ticket-btns .rate-q,.ticket-btns .rated{grid-column:1/-1;text-align:center}}
 .fb-src{font-size:12.5px;color:#475569;font-weight:700;margin-bottom:8px}
+/* Parolni ko'rsatish tugmasi */
+.pw-wrap{position:relative;display:block;width:100%}
+.filters .pw-wrap{width:auto;display:inline-block}
+.pw-wrap input{padding-right:44px!important;width:100%}
+.pw-eye{position:absolute;right:4px;top:50%;transform:translateY(-50%);border:none;background:none;font-size:18px;cursor:pointer;padding:6px 8px;border-radius:8px;line-height:1}
+.pw-eye:hover{background:#f1f5f9}

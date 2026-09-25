@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MedBron — Navbatsiz Tibbiyot | Startup MVP</title>
 <link rel="icon" type="image/svg+xml" href="logo.svg">
-<link rel="stylesheet" href="styles.css?v=20260925">
+<link rel="stylesheet" href="styles.css?v=20260925b">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -247,7 +247,7 @@
 <footer>
   <p><b>MedBron</b> — «Raqamli avlod qizlari — 2026» tanlovi uchun loyiha</p>
   <p id="authorLine"></p>
-  <p>🔒 Ism va telefon faqat shu qurilmada saqlanadi, hech qayerga yuborilmaydi. Haqiqiy versiyada ma'lumotlar himoyalangan serverda turadi va faqat bemor yozilgan klinikaga ko'rinadi.</p>
+  <p>🔒 Akkaunt (ism, telefon, viloyat) MedBron bazasida saqlanadi va boshqalarga ko'rsatilmaydi; kod faqat shifrlangan izi bilan turadi. Bronlar hozircha shu qurilmada saqlanadi. Fikr-mulohazalar ismsiz yig'iladi.</p>
   <p><a href="#admin" onclick="scrollToId('admin');return false;" style="color:#2563eb;font-weight:700">Shifoxona xodimimisiz? Admin kirish →</a></p>
 </footer>
 
@@ -273,7 +273,7 @@
       <label>Kodni takrorlang</label><input id="loginPin2" type="password" inputmode="numeric" maxlength="6" placeholder="••••" autocomplete="new-password" onkeydown="if(event.key==='Enter')doLogin()">
       <button class="btn primary full" onclick="doLogin()">Ro'yxatdan o'tish →</button>
     </div>
-    <p class="privacy-note">🔒 Ma'lumotlaringiz faqat shu telefonda saqlanadi va hech kimga yuborilmaydi. Kod o'rniga uning shifrlangan izi saqlanadi.</p>
+    <p class="privacy-note">🔒 Istalgan telefondan kira olishingiz uchun ism, telefon va viloyat MedBron bazasida saqlanadi va boshqalarga ko'rsatilmaydi. Kodning o'zi saqlanmaydi — faqat shifrlangan izi.</p>
     <button class="link-btn" onclick="document.getElementById('loginModal').classList.add('hidden');scrollToId('admin')">🏥 Shifoxona xodimiman — admin kirish</button>
   </div>
 </div>
@@ -310,14 +310,14 @@
   <a href="#dorilar"><span>💊</span>Dorilar</a>
 </nav>
 
-<script src="js/data.js?v=20260925"></script>
-<script src="js/auth.js?v=20260925"></script>
-<script src="js/slots.js?v=20260925"></script>
-<script src="js/ai-doctors.js?v=20260925"></script>
-<script src="js/booking.js?v=20260925"></script>
-<script src="js/queue.js?v=20260925"></script>
-<script src="js/feedback.js?v=20260925"></script>
-<script src="js/admin.js?v=20260925"></script>
-<script src="js/a11y.js?v=20260925"></script>
+<script src="js/data.js?v=20260925b"></script>
+<script src="js/auth.js?v=20260925b"></script>
+<script src="js/slots.js?v=20260925b"></script>
+<script src="js/ai-doctors.js?v=20260925b"></script>
+<script src="js/booking.js?v=20260925b"></script>
+<script src="js/queue.js?v=20260925b"></script>
+<script src="js/feedback.js?v=20260925b"></script>
+<script src="js/admin.js?v=20260925b"></script>
+<script src="js/a11y.js?v=20260925b"></script>
 </body>
 </html>

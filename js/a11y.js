@@ -94,6 +94,20 @@ function voiceInput(){
   recog.start();
 }
 
+/* --- Parol / PIN ni ko'rsatish tugmasi (👁) --- */
+function addPwEyes(){
+  document.querySelectorAll('input[type=password]').forEach(inp=>{
+    if(inp.parentElement.classList.contains('pw-wrap'))return;
+    const w=document.createElement('span');w.className='pw-wrap';
+    inp.parentNode.insertBefore(w,inp);w.appendChild(inp);
+    const b=document.createElement('button');b.type='button';b.className='pw-eye';b.textContent='👁';
+    b.title="Ko'rsatish";b.setAttribute('aria-label',"Kodni ko'rsatish");
+    b.onclick=()=>{const show=inp.type==='password';inp.type=show?'text':'password';b.textContent=show?'🙈':'👁';b.title=show?'Yashirish':"Ko'rsatish";inp.focus()};
+    w.appendChild(b);
+  });
+}
+addPwEyes();
+
 // saqlangan sozlamalarni qo'llaymiz
 if(prefGet('medbron_big'))document.documentElement.classList.add('big');
 if(prefGet('medbron_cyr'))applyCyr();

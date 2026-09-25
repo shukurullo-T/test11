@@ -101,7 +101,8 @@ function renderUser(){
   }
 }
 /* ============ PIN KOD: ro'yxatdan o'tish / qayta kirish ============ */
-// Akkauntlar shu qurilmada saqlanadi; PIN ochiq emas, faqat xeshi turadi
+// Akkauntlar Google Sheets'da saqlanadi (istalgan brauzer/telefondan kirish uchun) + shu brauzerda nusxasi.
+// PIN ochiq saqlanmaydi, faqat xeshi. Internet bo'lmasa — brauzerdagi nusxa bilan ishlaydi.
 function getAccounts(){try{return JSON.parse(localStorage.getItem('medbron_accounts')||'[]')}catch{return[]}}
 function saveAccounts(a){localStorage.setItem('medbron_accounts',JSON.stringify(a))}
 const phoneKey=p=>(p||'').replace(/\D/g,'').slice(-9);
@@ -115,18 +116,48 @@ function setLoginMode(mode){
   document.getElementById('tabSignup').classList.toggle('active',up);
   document.getElementById('tabSignin').classList.toggle('active',!up);
 }
-function doSignin(){
-  const name=document.getElementById('signinName').value.trim().toLowerCase();
-  const pin=document.getElementById('signinPin').value.trim();
-  if(name.length<3||!/^\d{4,6}$/.test(pin)){toast('⚠️ Ism va 4–6 xonali kodni kiriting');return}
-  const acc=getAccounts().find(a=>a.name.toLowerCase()===name&&a.pinHash===pinHash(a.phone,pin));
-  if(!acc){toast('❌ Ism yoki kod xato. Birinchi marta bo‘lsa — "Yangi ro‘yxat"');return}
+// Google Apps Script'ga so'rov (text/plain — oldindan CORS tekshiruvisiz). Javob: JSON yoki null (internet yo'q)
+async function accApi(data){
+  if(!FEEDBACK_URL)return null;
+  try{
+    const ctl=new AbortController();const t=setTimeout(()=>ctl.abort(),12000);
+    const r=await fetch(FEEDBACK_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(data),signal:ctl.signal});
+    clearTimeout(t);return await r.json();
+  }catch{return null}
+}
+// brauzerdagi nusxani yangilaymiz (keyingi safar internetsiz ham kira olsin)
+function rememberAcc(acc,hash){
+  const accs=getAccounts().filter(a=>phoneKey(a.phone)!==phoneKey(acc.phone));
+  accs.push({id:acc.id,name:acc.name,phone:acc.phone,region:acc.region,pinHash:hash});saveAccounts(accs);
+}
+function busy(btn,on,label){if(!btn)return;btn.disabled=on;if(on){btn.dataset.l=btn.textContent;btn.textContent=label}else if(btn.dataset.l)btn.textContent=btn.dataset.l}
+function finishSignin(acc){
   document.getElementById('signinPin').value='';
   saveUser({id:acc.id,name:acc.name,phone:acc.phone,region:acc.region});
   toast(`✅ Qaytganingizdan xursandmiz, ${acc.name}!`);
   renderDoctors();renderMy();
 }
-function doLogin(){
+async function doSignin(){
+  const nameRaw=document.getElementById('signinName').value.trim(),name=nameRaw.toLowerCase();
+  const pin=document.getElementById('signinPin').value.trim();
+  if(name.length<3||!/^\d{4,6}$/.test(pin)){toast('⚠️ Ism va 4–6 xonali kodni kiriting');return}
+  const btn=document.querySelector('#signinBox .btn');busy(btn,true,'⏳ Tekshirilmoqda...');
+  try{
+    const local=getAccounts().find(a=>a.name.toLowerCase()===name&&a.pinHash===pinHash(a.phone,pin));
+    const res=await accApi({action:'signin',name:nameRaw,pin});
+    if(res&&res.ok){rememberAcc(res.account,pinHash(res.account.phone,pin));finishSignin(res.account);return}
+    if(res&&res.error==='locked'){toast('⛔ Juda ko‘p xato urinish — 10 daqiqadan keyin qayta urinib ko‘ring');return}
+    if(local){
+      // serverda yo'q (eski, faqat shu brauzerda yaratilgan akkaunt) — serverga ko'chiramiz
+      if(res&&res.error==='notfound')await accApi({action:'signup',id:local.id||'p'+phoneKey(local.phone),name:local.name,phone:local.phone,region:local.region,pinHash:local.pinHash});
+      finishSignin(local);
+      if(!res)toast('📴 Internet yo‘q — shu brauzerdagi akkaunt bilan kirdingiz');
+      return;
+    }
+    toast(res?'❌ Ism yoki kod xato. Birinchi marta bo‘lsa — "Yangi ro‘yxat"':'📴 Internetga ulanib bo‘lmadi — qayta urinib ko‘ring');
+  }finally{busy(btn,false)}
+}
+async function doLogin(){
   const name=document.getElementById('loginName').value.trim();
   const phone=document.getElementById('loginPhone').value.trim();
   const region=document.getElementById('loginRegion').value;
@@ -138,15 +169,20 @@ function doLogin(){
   if(!/^\d{4,6}$/.test(pin)){toast('⚠️ Kod 4–6 ta raqamdan iborat bo‘lsin');return}
   if(pin!==pin2){toast('⚠️ Kodlar bir xil emas');return}
   // bitta raqam — bitta akkaunt. Aks holda boshqa odam shu raqam bilan kirib, eski egasining bronlarini ko'rardi
-  const accs=getAccounts();
-  if(accs.some(a=>phoneKey(a.phone)===phoneKey(phone))){toast('⚠️ Bu raqam allaqachon ro‘yxatdan o‘tgan — "Kodim bor" orqali kiring');setLoginMode('signin');return}
-  const id='a'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
-  accs.push({id,name,phone,region,pinHash:pinHash(phone,pin)});saveAccounts(accs);
-  document.getElementById('loginPin').value='';document.getElementById('loginPin2').value='';
-  saveUser({id,name,phone,region});
-  sendSMS(phone,`MedBron: Xush kelibsiz, ${name}! Siz ${region} viloyati sifatida kirdingiz. Endi faqat ${region} dagi klinikalar ko'rinadi.`);
-  toast(`✅ Xush kelibsiz, ${name}! (${region})`);
-  renderDoctors();renderMy();
+  if(getAccounts().some(a=>phoneKey(a.phone)===phoneKey(phone))){toast('⚠️ Bu raqam allaqachon ro‘yxatdan o‘tgan — "Kodim bor" orqali kiring');setLoginMode('signin');return}
+  const btn=document.querySelector('#signupBox .btn');busy(btn,true,'⏳ Saqlanmoqda...');
+  try{
+    const id='a'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+    const hash=pinHash(phone,pin);
+    const res=await accApi({action:'signup',id,name,phone,region,pinHash:hash});
+    if(res&&!res.ok){toast(res.error==='exists'?'⚠️ Bu raqam allaqachon ro‘yxatdan o‘tgan — "Kodim bor" orqali kiring':'⚠️ Ma’lumotlarni tekshiring');if(res.error==='exists')setLoginMode('signin');return}
+    rememberAcc({id,name,phone,region},hash);
+    document.getElementById('loginPin').value='';document.getElementById('loginPin2').value='';
+    saveUser({id,name,phone,region});
+    sendSMS(phone,`MedBron: Xush kelibsiz, ${name}! Siz ${region} viloyati sifatida kirdingiz. Endi faqat ${region} dagi klinikalar ko'rinadi.`);
+    toast(res?`✅ Xush kelibsiz, ${name}! Endi istalgan telefondan kira olasiz`:`✅ Xush kelibsiz, ${name}! (internet yo‘q — akkaunt hozircha shu brauzerda)`);
+    renderDoctors();renderMy();
+  }finally{busy(btn,false)}
 }
 function logout(){localStorage.removeItem('medbron_user');renderUser();renderDoctors();renderMy();toast('🚪 Chiqildi — qayta kiring');}
 function changeRegion(){
