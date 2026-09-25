@@ -13,19 +13,27 @@ function upsertMyFb(patch){
   if(!f){id='f'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);f={id,vote:null,tags:[],text:''};list.push(f);localStorage.setItem('medbron_myfb',id)}
   const u=getUser();
   Object.assign(f,patch,{who:u?u.name:'Mehmon',time:new Date().toLocaleString('uz-UZ')});
-  saveFb(list);syncFb(f);return f;
+  saveFb(list);syncFb(f,'text' in patch);return f;
 }
 // Google Sheets'ga yuborish. Ism/telefon yuborilmaydi. Sabablar tez-tez bosilganda — oxirgisini yuboramiz
 let fbTimer=null;
-function syncFb(f){
+const fbPayload=f=>JSON.stringify({id:f.id,vote:f.vote,tags:f.tags,text:f.text||''});
+function sendFb(f){
+  const body=fbPayload(f);
+  // text/plain + no-cors: Google Apps Script shunday qabul qiladi; keepalive — sahifa yopilsa ham yetib boradi
+  fetch(FEEDBACK_URL,{method:'POST',mode:'no-cors',keepalive:true,headers:{'Content-Type':'text/plain;charset=utf-8'},body})
+    .then(()=>{try{localStorage.setItem('medbron_fb_sent',body)}catch{}}).catch(()=>{});
+}
+function syncFb(f,now){
   if(!FEEDBACK_URL||!f.vote)return;
   clearTimeout(fbTimer);
-  fbTimer=setTimeout(()=>{
-    // text/plain + no-cors: Google Apps Script shunday qabul qiladi (javobni o'qish shart emas)
-    fetch(FEEDBACK_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},
-      body:JSON.stringify({id:f.id,vote:f.vote,tags:f.tags,text:f.text||''})}).catch(()=>{});
-  },700);
+  if(now)sendFb(f);else fbTimer=setTimeout(()=>sendFb(f),700);
 }
+// sahifa ochilganda: oldin yozilib, jadvalga yetib bormagan fikr bo'lsa — qayta yuboramiz
+(function resyncFb(){
+  const f=myFb();
+  if(f&&f.vote&&FEEDBACK_URL&&localStorage.getItem('medbron_fb_sent')!==fbPayload(f))sendFb(f);
+})();
 function fbVote(v){
   const cur=myFb();
   // ovoz o'zgarsa, eski sabablar mos kelmaydi — tozalaymiz
