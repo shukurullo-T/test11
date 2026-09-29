@@ -11,7 +11,7 @@ function sortedQueue(){
 function getCalled(){return getBooks().find(x=>x.status==='called')||null}
 function callNext(auto){
   const adm=getAdmin();
-  if(!adm){if(!auto){toast('🔒 Navbatni faqat admin chaqiradi — admin login bilan kiring');scrollToId('admin')}return}
+  if(!adm){if(!auto){toast('🔒 Navbatni faqat admin chaqiradi — admin login bilan kiring')}return}
   const b=getBooks();
   if(b.some(x=>x.status==='called')){if(!auto)toast('⚠️ Chaqirilgan bemor bor');tickQueue(true);return}
   // admin faqat o'z klinikasining BUGUNGI bemorlarini chaqiradi — soat bo'yicha, keyin bron vaqti bo'yicha
@@ -29,7 +29,7 @@ function callNext(auto){
 function confirmArrivalPrompt(num){doCheckin(num)}
 function doCheckin(raw){
   const adm=getAdmin();
-  if(!adm){toast('🔒 Kelganini faqat admin belgilaydi — admin login bilan kiring');scrollToId('admin');return}
+  if(!adm){toast('🔒 Kelganini faqat admin belgilaydi — admin login bilan kiring');return}
   const box=document.getElementById('adminCheckInput');
   const legacy=document.getElementById('checkInput');
   const v=(raw||(box&&box.value)||(legacy&&legacy.value)||'').trim();
@@ -56,10 +56,10 @@ function tickQueue(){
   const curBox=document.getElementById('qCurrent');
   const callBox=document.getElementById('qCalled');
   const listBox=document.getElementById('qList');
-  if(!curBox)return;
   const books=getBooks();
   const confirmed=books.filter(x=>x.status==='confirmed').slice(-1)[0];
-  curBox.innerHTML=confirmed?`<b>${confirmed.num}</b> • ${esc(confirmed.name)} qabulda ✅`:`<b>—</b> • Qabul boshlanmagan`;
+  // bemor sahifasida qCurrent/qCalled/qList bor, admin sahifasida — adminCalled/adminQList
+  if(curBox)curBox.innerHTML=confirmed?`<b>${confirmed.num}</b> • ${esc(confirmed.name)} qabulda ✅`:`<b>—</b> • Qabul boshlanmagan`;
   if(called){
     const left=called.expiresAt-now;
     if(left<=0){
@@ -76,19 +76,19 @@ function tickQueue(){
     document.querySelectorAll(`[data-countdown-for="${called.num}"]`).forEach(e=>e.textContent=fmtLeft(left));
     const pct=Math.max(0,Math.min(100,left/(GRACE_SECONDS*1000)*100));
     // Asosiy menyu — faqat soniyalar (tugmasiz)
-    callBox.innerHTML=`<div class="called-card"><div><span class="muted-sm">Chaqirildi:</span><br><b class="big-num">${called.num}</b> • ${esc(called.name)} • 👥 ${called.persons||1}<br><small>${esc(called.doc)} • ${called.date} ${called.time}</small></div><div class="count-right"><div class="count-num">⏳ ${fmtLeft(left)}</div><div class="count-bar"><div class="count-fill" style="width:${pct}%"></div></div><small>Kelmasa avtomatik keyingisiga o'tadi</small></div></div>`;
+    if(callBox)callBox.innerHTML=`<div class="called-card"><div><span class="muted-sm">Chaqirildi:</span><br><b class="big-num">${called.num}</b> • ${esc(called.name)} • 👥 ${called.persons||1}<br><small>${esc(called.doc)} • ${called.date} ${called.time}</small></div><div class="count-right"><div class="count-num">⏳ ${fmtLeft(left)}</div><div class="count-bar"><div class="count-fill" style="width:${pct}%"></div></div><small>Kelmasa avtomatik keyingisiga o'tadi</small></div></div>`;
     // Admin — tugmalar bilan
     const ab=document.getElementById('adminCalled');
     if(ab)ab.innerHTML=`<div class="called-card"><div><span class="muted-sm">Chaqirildi (admin):</span><br><b class="big-num">${called.num}</b> • ${esc(called.name)} • 📞 ${esc(called.phone)}<br><small>${esc(called.doc)} • ${called.date} ${called.time}</small></div><div class="count-right"><div class="count-num">⏳ <span data-countdown-for="${called.num}">${fmtLeft(left)}</span></div><div class="count-bar"><div class="count-fill" style="width:${pct}%"></div></div><div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap"><button class="mini-btn ok" onclick="confirmArrivalPrompt('${called.num}')">Keldi ✅</button><button class="mini-btn" onclick="postponeByNum('${called.num}')">Vaqtni o'zgartirish ⏩</button></div></div></div>`;
   }else{
-    callBox.innerHTML=`<p class="sub">📭 Hozir chaqiriq yo'q — admin chaqirganda shu yerda soniyalar chiqadi.</p>`;
+    if(callBox)callBox.innerHTML=`<p class="sub">📭 Hozir chaqiriq yo'q — admin chaqirganda shu yerda soniyalar chiqadi.</p>`;
     const ab=document.getElementById('adminCalled');
     if(ab)ab.innerHTML=`<p class="sub">📭 Chaqiruv yo‘q. <button class="mini-btn ok" onclick="callNext()">Keyingini chaqirish 📢</button></p>`;
   }
   const u=getUser();
   const active=sortedQueue().filter(x=>x.status==='waiting'||x.status==='called');
   const qRows=q=>q.length?q.map((x,pos)=>`<div class="q-item ${x.status}"><span><b>#${pos+1}</b> ${x.num} • ${esc(x.name)} • ${x.date===todayStr()?'':x.date.slice(5)+' '}${x.time}</span>${x.status==='called'?`<span class="st st-call">📢 <span data-countdown-for="${x.num}">...</span></span>`:`<span class="st st-wait">⏳</span>`}</div>`).join(''):`<p class="sub">Navbat bo'sh.</p>`;
-  listBox.innerHTML=qRows(u?active.filter(x=>x.city===u.region):active);
+  if(listBox)listBox.innerHTML=qRows(u?active.filter(x=>x.city===u.region):active);
   // admin nusxasida faqat o'z klinikasining navbati
   const aq=document.getElementById('adminQList');
   const adm=getAdmin();

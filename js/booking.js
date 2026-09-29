@@ -1,4 +1,5 @@
-function openModal(id){
+// date/time berilsa — shifokor kartasidagi vaqt bosilgan: o'sha kun va vaqt tayyor tanlanadi
+function openModal(id,date,time){
   const u=getUser();
   if(!u){document.getElementById('loginModal').classList.remove('hidden');toast('🔑 Avval ism + nomer + viloyat bilan kiring');return}
   selectedDoctor=doctors.find(d=>d.id===id);selectedTime=null;
@@ -9,10 +10,11 @@ function openModal(id){
   // birinchi bo'sh vaqti bor kunni avtomatik tanlaymiz (kechqurun "bugun" to'la bo'ladi)
   let first=todayStr();
   for(let k=0;k<MAX_ADVANCE_DAYS;k++){const dt=addDaysStr(todayStr(),k);if(dayFreeCount(selectedDoctor.id,dt)>0){first=dt;break}}
-  bd.value=first;
+  bd.value=(date&&date>=todayStr())?date:first;
   document.getElementById('bName').value=u.name;
   document.getElementById('bPhone').value=u.phone;
   refreshSlots();
+  if(time){const b=[...document.querySelectorAll('#timeSlots button:not([disabled])')].find(x=>x.textContent.includes(time));if(b)pickTime(b,time)}
   document.getElementById('modal').classList.remove('hidden');
 }
 function renderDayStrip(){
@@ -53,10 +55,10 @@ function pickTime(el,t){
   selectedTime=t;
   document.querySelectorAll('#timeSlots button').forEach(b=>b.classList.remove('active'));el.classList.add('active');
 }
-function closeModal(){document.getElementById('modal').classList.add('hidden')}
+function closeModal(){document.getElementById('modal')?.classList.add('hidden')}
 // Esc yoki fonga bosish bron oynasini yopadi
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
-document.getElementById('modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal()});
+document.getElementById('modal')?.addEventListener('click',e=>{if(e.target.id==='modal')closeModal()});
 
 function getBooks(){
   let b=[];

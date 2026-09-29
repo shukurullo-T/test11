@@ -9,7 +9,7 @@ function aiDiagnose(){
   const box=document.getElementById('aiResult');
   box.classList.remove('hidden','ai-danger');
   if(v.trim().length<5){box.innerHTML="⚠️ Iltimos, simptomni batafsilroq yozing.";return}
-  const disclaimer=`<p class="ai-note">ℹ️ Bu dastlabki yo'naltirish, tashxis emas. Yakuniy xulosani faqat shifokor beradi.</p>`;
+  const disclaimer=`<p class="ai-note">ℹ️ MedBron AI tashxis qo'ymaydi — faqat qaysi mutaxassisga murojaat qilishni tavsiya qiladi. Tashxis va davolashni faqat shifokor belgilaydi. Ahvolingiz og'irlashsa — 103.</p>`;
   // XAVFLI BELGILAR — bron emas, darhol 103
   if(/ko'krak.*(og'ri|siqil|achish)|nafas.*(qis|ololma|yetish)|hush.*(ket|yo'q)|falaj|yuz.*qiyshay|gapira olmay|qon.*(qus|ket)|tutqanoq|zahar|ong.*yo'q/.test(v)){
     box.classList.add('ai-danger');
@@ -27,9 +27,10 @@ function aiDiagnose(){
   const u=getUser();
   const doc=(u&&doctors.find(d=>d.spec===spec&&d.city===u.region))||doctors.find(d=>d.spec===spec)||doctors[0];
   const far=u&&doc.city!==u.region?`<br><small>⚠️ ${esc(u.region)}da ${spec} topilmadi — eng yaqini ko'rsatildi.</small>`:'';
-  box.innerHTML=`<h3>✅ AI Xulosa</h3><p><b>Tavsiya:</b> 🩺 ${spec}ga boring</p><p><b>Daraja:</b> ${level}</p><p><b>Maslahat:</b> ${advice}</p><p style="margin-top:10px"><b>Topilgan shifokor:</b> ${doc.name} • ${doc.clinic}, ${doc.city}<br><small>📍 ${doc.addr}</small>${far}</p><button class="btn primary" style="margin-top:10px" onclick="openModal(${doc.id})">Shu shifokorga bron qilish →</button>${disclaimer}`;
+  box.innerHTML=`<h3>🧭 AI tavsiyasi</h3><p><b>Qaysi mutaxassis:</b> 🩺 ${spec}</p><p><b>Qanchalik tez:</b> ${level}</p><p><b>Shifokorgacha:</b> ${advice}</p><p style="margin-top:10px"><b>Yaqin shifokor:</b> ${doc.name} • ${doc.clinic}, ${doc.city}<br><small>📍 ${doc.addr}</small>${far}</p><button class="btn primary" style="margin-top:10px" onclick="openModal(${doc.id})">Shu shifokorga bron qilish →</button>${disclaimer}`;
 }
 function renderDoctors(){
+  const grid0=document.getElementById('doctorGrid');if(!grid0)return; // admin sahifasida shifokorlar ro'yxati yo'q
   const q=(document.getElementById('searchInput').value||'').toLowerCase();
   const s=document.getElementById('specFilter').value;
   const cf=document.getElementById('cityFilter');
@@ -43,17 +44,36 @@ function renderDoctors(){
   const list=doctors.filter(d=>(!s||d.spec===s)&&(!effRegion||d.city===effRegion)&&(d.name.toLowerCase().includes(q)||d.clinic.toLowerCase().includes(q)));
   if(!list.length){grid.innerHTML=`<p>📭 ${effRegion||'Bu hudud'}da hozircha shifokor topilmadi. Boshqa viloyat tanlang yoki admin soat qo'shsin.</p>`;return}
   grid.innerHTML=list.map(d=>{
-    const taken=getTaken(d.id,today);
-    const{slots,closed}=buildSlots(d.id,today);
-    const free=slots.filter(t=>!taken.has(t)&&!closed.includes(t)).length;
-    // keyingi bo'sh kun (14 kun ichida)
-    let nextFree=null;
-    for(let k=0;k<MAX_ADVANCE_DAYS;k++){const dt=addDaysStr(today,k);if(dayFreeCount(d.id,dt)>0){nextFree=dt;break}}
+    // eng yaqin bo'sh kun va o'sha kundagi bo'sh vaqtlar (14 kun ichida)
+    let day=null,times=[];
+    for(let k=0;k<MAX_ADVANCE_DAYS;k++){
+      const dt=addDaysStr(today,k);const{slots,closed}=buildSlots(d.id,dt);const taken=getTaken(d.id,dt);
+      const f=slots.filter(t=>!taken.has(t)&&!closed.includes(t));
+      if(f.length){day=dt;times=f;break}
+    }
+    const w=getWork(d.id);
     const adm=adminOfClinic(d.clinic);
-    const preview=slots.filter(t=>!taken.has(t)&&!closed.includes(t)).slice(0,3).join(' • ')||'—';
-    return `<div class="card"><div class="spec">${d.spec} • 📍 ${d.city}</div><h3>${d.name}</h3><p>🏥 ${d.clinic}<br>📌 ${d.addr}<br>⭐ <span class="rating">${d.rating}</span> • ${d.exp}</p><div class="price">${d.price} / qabul</div><p class="free-line">${free>0?`🟢 Bugun ${free} bo'sh vaqt bor (${preview})`:`🔴 Bugun joy yo'q`}${nextFree?`<br>📅 Eng yaqin bo'sh kun: <b>${nextFree}</b> — 14 kun oldingacha bron qilish mumkin`:''}</p><p class="reception">📞 Ro'yxat (registratura): <b>${adm?adm.name:''}</b> ${adm?`<a class="mini-btn" href="tel:${adm.phone.replace(/\s/g,'')}">${adm.phone} ga qo'ng'iroq</a>`:''}<br><small>Ilovani bilmasangiz — shifoxonaga boring yoki shu raqamga qo'ng'iroq qiling, admin sizni bo'sh vaqtga qo'yadi.</small></p><button class="btn primary full" onclick="openModal(${d.id})">Bron qilish</button></div>`;
+    const dayLbl=day===today?'Bugun':day===addDaysStr(today,1)?'Ertaga':day?dayShort(day):'';
+    const chips=times.slice(0,6).map(t=>`<button class="slot-chip" onclick="openModal(${d.id},'${day}','${t}')">${t}</button>`).join('')+(times.length>6?`<button class="slot-chip more" onclick="openModal(${d.id},'${day}')">+${times.length-6}</button>`:'');
+    return `<div class="card doc-card">
+      <div class="doc-head"><div class="doc-ava" style="background:${specColor(d.spec)}">${initials(d.name)}</div>
+        <div><h3>${d.name}</h3><div class="spec">${d.spec} · ${d.exp} tajriba</div><div class="doc-rate">⭐ <span class="rating">${d.rating}</span> · 📍 ${d.city}</div></div></div>
+      <ul class="doc-info">
+        <li>🏥 <b>${d.clinic}</b></li>
+        <li>📌 ${d.addr} <a class="map-link" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(d.clinic+', '+d.addr)}" target="_blank" rel="noopener">Xaritada ↗</a></li>
+        <li>🕘 Ish vaqti: ${w.start}–${w.end} · har ${w.step} daq</li>
+        <li>💵 Qabul: <b>${d.price}</b></li>
+      </ul>
+      <div class="doc-slots">${day?`<div class="slots-lbl">🟢 ${dayLbl} bo'sh vaqtlar:</div><div class="slot-chips">${chips}</div>`:`<div class="slots-lbl">🔴 14 kun ichida bo'sh vaqt yo'q</div>`}</div>
+      <button class="btn primary full" onclick="openModal(${d.id}${day?`,'${day}'`:''})">Bron qilish</button>
+      ${adm?`<p class="doc-reception">📞 Ilovasiz yozilish: registratura <a href="tel:${adm.phone.replace(/\s/g,'')}">${adm.phone}</a></p>`:''}
+    </div>`;
   }).join('');
 }
+function initials(n){return n.replace(/^Dr\.?\s*/,'').split(/\s+/).map(x=>x[0]||'').join('').slice(0,2).toUpperCase()}
+function specColor(sp){return({Terapevt:'#2563eb',Pediatr:'#16a34a',Kardiolog:'#dc2626',Stomatolog:'#0891b2',Dermatolog:'#c026d3',Nevrolog:'#7c3aed'})[sp]||'#475569'}
+function dayShort(d){const m=['yan','fev','mar','apr','may','iyun','iyul','avg','sen','okt','noy','dek'];return +d.slice(8)+'-'+m[+d.slice(5,7)-1]}
 function renderPharm(){
-  document.getElementById('pharmGrid').innerHTML=drugs.map(d=>`<div class="pharm"><h4>${d.name}</h4><p class="cheap">✅ ${d.cheap}</p><p class="exp">${d.exp}</p></div>`).join('');
+  const box=document.getElementById('pharmGrid');if(!box)return;
+  box.innerHTML=drugs.map(d=>`<div class="pharm"><h4>${d.name}</h4><p class="cheap">✅ ${d.cheap}</p><p class="exp">${d.exp}</p></div>`).join('');
 }

@@ -19,9 +19,9 @@ Har bir klinikaning o'z logini bor. Login va parollar **hakamlarga alohida (qog'
 ## Hakamlar uchun demo ssenariy
 
 1. Ism + telefon + viloyat bilan kiring.
-2. **AI Tashxis** — simptom yozing (masalan "ko'kragim siqilyapti" → 🚨 103 ogohlantirishi).
-3. Shifokorni tanlab bron qiling → **Mening bronlarim**.
-4. Admin bo'limiga (alohida berilgan login bilan) kiring → **Demo bronlar ✨** → **Keyingi bemorni chaqirish 📢**.
+2. **AI yo'naltirish** — simptom yozing (masalan "ko'kragim siqilyapti" → 🚨 103 ogohlantirishi). AI tashxis qo'ymaydi, mutaxassisni tavsiya qiladi.
+3. Shifokor kartasidagi bo'sh vaqtni bosing → bron → **Mening bronlarim**.
+4. Klinika paneliga — **/admin/** sahifasiga (alohida berilgan login bilan) kiring → **Demo bronlar ✨** → **Keyingi bemorni chaqirish 📢**.
 5. **Jonli navbat** va **SMS simulyatsiyasi** oynalarini kuzating.
 
 ## Fayllar
@@ -35,6 +35,9 @@ Har bir klinikaning o'z logini bor. Login va parollar **hakamlarga alohida (qog'
 | `js/booking.js` | Bron, bekor qilish, vaqtni ko'chirish, SMS |
 | `js/queue.js` | Jonli navbat, chaqiruv, demo ma'lumotlar |
 | `js/admin.js` | Admin panel, registratura, ishga tushirish |
+| `js/feedback.js` | Fikr-mulohaza, bron uchun xarita/kalendar/baho |
+| `js/a11y.js` | Kirill yozuvi, katta shrift, ovoz, parolni ko'rsatish |
+| `admin/index.html` | Klinika paneli (bemor sahifasidan alohida) |
 
 ## Fikrlarni Google Sheets'ga ulash
 
